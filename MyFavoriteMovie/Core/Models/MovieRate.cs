@@ -16,5 +16,8 @@ namespace Core.Models
         [MinLength(1)]
         [MaxLength(10)]
         public byte Rate { get; set; }
+
+        public Movie? Movie { get; set; }
+        public Account? Account { get; set; }
     }
 }

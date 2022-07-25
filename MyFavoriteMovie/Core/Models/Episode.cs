@@ -21,5 +21,7 @@ namespace Core.Models
         public int Season { get; set; }
         public TimeSpan? Duration { get; set; }
         public DateTime? RealeseDate { get; set; }
+
+        public Movie? Movie { get; set; }
     }
 }
