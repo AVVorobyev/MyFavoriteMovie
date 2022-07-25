@@ -23,6 +23,8 @@ namespace Core.Models
         [MinLength(20)]
         [MaxLength(3000)]
         public string? Text { get; set; }
+        public Movie? Movie { get; set; }
+        public Account? Author { get; set; }
     }
 
     public enum ReviewType
