@@ -1,12 +1,12 @@
-﻿using Core.Models;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
+using MyFavoriteMovie.Core.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Core.Contexts
+namespace MyFavoriteMovie.Core.Contexts
 {
     public class MSSQLDbContext : DbContext
     {

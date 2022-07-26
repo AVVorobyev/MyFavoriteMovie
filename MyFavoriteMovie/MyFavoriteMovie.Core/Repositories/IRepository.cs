@@ -5,7 +5,7 @@ using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Core.Repositories
+namespace MyFavoriteMovie.Core.Repositories
 {
     public interface IRepository<T> where T : class
     {
