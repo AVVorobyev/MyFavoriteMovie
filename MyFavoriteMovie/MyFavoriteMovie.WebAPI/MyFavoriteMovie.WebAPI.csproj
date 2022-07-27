@@ -6,4 +6,8 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\MyFavoriteMovie.Core\MyFavoriteMovie.Core.csproj" />
+  </ItemGroup>
+
 </Project>

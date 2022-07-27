@@ -25,7 +25,9 @@ namespace MyFavoriteMovie.Core.Models
         public double? HeightInMeters { get; set; }
         public DateTime? BirthDate { get; set; }
         public DateTime? DeathDate { get; set; }
+        public string? AvatarImage { get; set; }
 
+        public List<ActorImage>? Images { get; set; }
         public List<Movie> ActorsInMovie { get; set; } = new List<Movie>();
         public List<Movie> DirectorsInMovie { get; set; } = new List<Movie>();
         public List<ActorAward> Awards { get; set; } = new List<ActorAward>();

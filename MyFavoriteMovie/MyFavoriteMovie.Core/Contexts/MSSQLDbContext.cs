@@ -73,6 +73,12 @@ namespace MyFavoriteMovie.Core.Contexts
                 .HasMany(m => m.DirectedBy)
                 .WithMany(a => a.DirectorsInMovie)
                 .UsingEntity(t => t.ToTable("MovieDirectedBy"));
+
+            // Movies - Images
+            modelBuilder.Entity<Movie>()
+                .HasMany(m => m.Images)
+                .WithOne(i => i.Movie)
+                .HasForeignKey(i => i.Id);
         }
 
         private void ConfigureUserRelationship(ModelBuilder modelBuilder)
@@ -109,6 +115,12 @@ namespace MyFavoriteMovie.Core.Contexts
                 .HasMany(ac => ac.Awards)
                 .WithMany(aw => aw.ActorHolder)
                 .UsingEntity(t => t.ToTable("ActorHolderAwards"));
+
+            // Actors -Images
+            modelBuilder.Entity<Actor>()
+                .HasMany(ac => ac.Images)
+                .WithOne(i => i.Actor)
+                .HasForeignKey(i => i.Id);
         }
     }
 }

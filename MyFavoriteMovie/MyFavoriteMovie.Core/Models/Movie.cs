@@ -19,7 +19,9 @@ namespace MyFavoriteMovie.Core.Models
         public string? Name { get; set; }
         public DateTime? RealeseDate { get; set; }
         public TimeSpan? Duration { get; set; }
+        public string? Poster { get; set; }
 
+        public List<MovieImage>? Images { get; set; }
         public List<Actor> DirectedBy { get; set; } = new List<Actor>();
         public List<Actor> Actors { get; set; } = new List<Actor>();
         public List<Review> Reviews { get; set; } = new List<Review>();
