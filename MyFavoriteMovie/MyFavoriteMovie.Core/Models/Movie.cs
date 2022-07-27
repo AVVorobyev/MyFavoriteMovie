@@ -19,6 +19,10 @@ namespace MyFavoriteMovie.Core.Models
         public string? Name { get; set; }
         public DateTime? RealeseDate { get; set; }
         public TimeSpan? Duration { get; set; }
+
+        [MinLength(1)]
+        [MaxLength(1000)]
+        public string? Title { get; set; }
         public string? Poster { get; set; }
 
         public List<MovieImage>? Images { get; set; }

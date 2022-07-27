@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MyFavoriteMovie.Core.Contexts;
+using MyFavoriteMovie.Core.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -55,29 +56,44 @@ namespace MyFavoriteMovie.Core.Repositories
             return _domainResult;
         }
 
-        public async Task<DomainResult<IEnumerable<T>>> GetAsync(int skip, int take)
+        public async Task<DomainResult<IEnumerable<T>>> GetAsync(int skip = 0, int take = 10, string? includeProperties = null)
         {
             try
             {
-                var entity = await _dbSet.Skip(skip).Take(take).ToListAsync();
+                IQueryable<T> query = _dbSet;
 
-                _domainResult = DomainResult<IEnumerable<T>>.Succeeded(entity);
+                if (includeProperties != null)
+                {
+                    foreach (var propery in includeProperties.Split(new char[] { ',' },
+                        StringSplitOptions.RemoveEmptyEntries))
+                    {
+                        query = query.Include(propery);
+                    }
+                }
+
+                var result = await query.Skip(skip).Take(take).ToListAsync();
+
+                if (result != null && result.Count > 0)
+                    _domainResult = DomainResult<IEnumerable<T>>.Succeeded(result);
+                else
+                    throw new NotFoundException();
             }
             catch (Exception e)
             {
-                _domainResult = DomainResult.Failed(e.Message);
+                _domainResult = DomainResult<IEnumerable<T>>.Failed(e.Message);
             }
 
             return (DomainResult<IEnumerable<T>>)_domainResult;
         }
 
-        public async Task<DomainResult<T>> GetByIdAsync(Expression<Func<T, bool>>? filter = null, string? includeProperties = null)
+        public async Task<DomainResult<T>> GetByIdAsync(Expression<Func<T, bool>> filter, string? includeProperties = null)
         {
             try
             {
                 IQueryable<T> query = _dbSet;
 
                 if (filter != null)
+
                 {
                     query = query.Where(filter);
                 }
@@ -91,11 +107,16 @@ namespace MyFavoriteMovie.Core.Repositories
                     }
                 }
 
-                _domainResult = DomainResult<T>.Succeeded(await query.SingleAsync());
+                var result = await query.FirstOrDefaultAsync();
+
+                if (result != null)
+                    _domainResult = DomainResult<T>.Succeeded(result);
+                else
+                    throw new NotFoundException();
             }
             catch (Exception e)
             {
-                _domainResult = DomainResult.Failed(e.Message);
+                _domainResult = DomainResult<T>.Failed(e.Message);
             }
 
             return (DomainResult<T>)_domainResult;

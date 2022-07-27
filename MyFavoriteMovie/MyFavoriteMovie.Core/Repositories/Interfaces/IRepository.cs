@@ -9,8 +9,8 @@ namespace MyFavoriteMovie.Core.Repositories
 {
     public interface IRepository<T> where T : class
     {
-        public Task<DomainResult<T>> GetByIdAsync(Expression<Func<T, bool>> filter, string? includeProperties);
-        public Task<DomainResult<IEnumerable<T>>> GetAsync(int skip, int take);
+        public Task<DomainResult<T>> GetByIdAsync(Expression<Func<T, bool>> filter, string? includeProperties = null);
+        public Task<DomainResult<IEnumerable<T>>> GetAsync(int skip = 0, int take = 10, string? includeProperties = null);
         public Task<DomainResult> AddAsync(T entity);
         public Task<DomainResult> UpdateAsync(T entity);
         public Task<DomainResult> DeleteAsync(T entity);
