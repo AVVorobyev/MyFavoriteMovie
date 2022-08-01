@@ -14,7 +14,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Test", "Test\Test.csproj", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MyFavoriteMovie.Core", "MyFavoriteMovie.Core\MyFavoriteMovie.Core.csproj", "{53A95A91-8F2F-4370-B9D7-86D835F32A44}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyFavoriteMovie.WebAPI", "MyFavoriteMovie.WebAPI\MyFavoriteMovie.WebAPI.csproj", "{D6019F6B-C38D-4644-81B5-32F0D686C94F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MyFavoriteMovie.WebAPI", "MyFavoriteMovie.WebAPI\MyFavoriteMovie.WebAPI.csproj", "{D6019F6B-C38D-4644-81B5-32F0D686C94F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
