@@ -17,6 +17,6 @@ namespace MyFavoriteMovie.Core.Models
         [MaxLength(100)]
         public string? Name { get; set; }
 
-        public List<Movie> Movies { get; set; } = new List<Movie>();
+        public List<Movie> Movies { get; set; } = new();
     }
 }

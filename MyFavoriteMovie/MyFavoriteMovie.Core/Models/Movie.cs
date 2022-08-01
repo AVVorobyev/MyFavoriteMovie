@@ -26,13 +26,13 @@ namespace MyFavoriteMovie.Core.Models
         public string? Poster { get; set; }
 
         public List<MovieImage>? Images { get; set; }
-        public List<Actor> DirectedBy { get; set; } = new List<Actor>();
-        public List<Actor> Actors { get; set; } = new List<Actor>();
-        public List<Review> Reviews { get; set; } = new List<Review>();
-        public List<MovieAward> Awards { get; set; } = new List<MovieAward>();
-        public List<Genre> Genres { get; set; } = new List<Genre>();
-        public List<Episode> Episodes { get; set; } = new List<Episode>();
-        public List<MovieRate> MovieRates { get; set; } = new List<MovieRate>();
-        public List<Account> AccountsFavorite { get; set; } = new List<Account>();
+        public List<Actor> DirectedBy { get; set; } = new();
+        public List<Actor> Actors { get; set; } = new();
+        public List<Review> Reviews { get; set; } = new();
+        public List<MovieAward> Awards { get; set; } = new();
+        public List<Genre> Genres { get; set; } = new();
+        public List<Episode> Episodes { get; set; } = new();
+        public List<MovieRate> MovieRates { get; set; } = new();
+        public List<Account> AccountsFavorite { get; set; } = new();
     }
 }

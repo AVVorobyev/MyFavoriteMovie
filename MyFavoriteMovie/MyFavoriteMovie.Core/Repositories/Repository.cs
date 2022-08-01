@@ -93,7 +93,6 @@ namespace MyFavoriteMovie.Core.Repositories
                 IQueryable<T> query = _dbSet;
 
                 if (filter != null)
-
                 {
                     query = query.Where(filter);
                 }

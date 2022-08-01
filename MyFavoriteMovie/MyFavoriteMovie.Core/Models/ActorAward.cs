@@ -8,6 +8,6 @@ namespace MyFavoriteMovie.Core.Models
 {
     public class ActorAward : Award
     {
-        public List<Actor> ActorHolder { get; set; } = new List<Actor>();
+        public List<Actor> ActorHolder { get; set; } = new();
     }
 }

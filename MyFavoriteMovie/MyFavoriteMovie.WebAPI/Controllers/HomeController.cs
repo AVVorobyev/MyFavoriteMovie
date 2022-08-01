@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using MyFavoriteMovie.Core.Models;
 using MyFavoriteMovie.Core.Repositories.Interfaces;
 using MyFavoriteMovie.WebAPI.Dto.Home;
 
@@ -22,9 +23,9 @@ namespace MyFavoriteMovie.WebAPI.Controllers
             List<MovieDto> movieDtos = new();
             var movieResult = _movieRepository.GetAsync().Result;
 
-            _logger.LogInformation(movieResult.Message != null ? movieResult.Message : "Ok");
+            _logger.LogInformation("", movieResult.Message ?? "Ok");
 
-            if (movieResult.Succes)
+            if (movieResult.Success)
             {
                 foreach (var movie in movieResult.Result!)
                 {
@@ -41,9 +42,9 @@ namespace MyFavoriteMovie.WebAPI.Controllers
             List<ActorDto> actorDtos= new();
             var actorResult = _actorRepository.GetAsync().Result;
 
-            _logger.LogInformation(actorResult.Message != null ? actorResult.Message : "Ok");
+            _logger.LogInformation("", actorResult.Message ?? "Ok");
 
-            if (actorResult.Succes)
+            if (actorResult.Success)
             {
                 foreach (var actor in actorResult.Result!)
                 {

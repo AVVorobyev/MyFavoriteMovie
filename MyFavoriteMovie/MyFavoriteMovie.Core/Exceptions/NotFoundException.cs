@@ -10,7 +10,7 @@ namespace MyFavoriteMovie.Core.Exceptions
     {
         public override string Message { get; }
 
-        public NotFoundException() { Message = "NotFound"; }
+        public NotFoundException() { Message = "Not Found."; }
         public NotFoundException(string message) : base(message) { Message = message; }
         public NotFoundException(string message, Exception inner) : base(message, inner) { Message = message; }
 

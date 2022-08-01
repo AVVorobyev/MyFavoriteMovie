@@ -22,15 +22,15 @@ namespace MyFavoriteMovie.Core.Models
         [MaxLength(100)]
         public string? Surname { get; set; }
 
-        public double? HeightInMeters { get; set; }
+        public double? Height { get; set; }
         public DateTime? BirthDate { get; set; }
         public DateTime? DeathDate { get; set; }
         public string? AvatarImage { get; set; }
 
         public List<ActorImage>? Images { get; set; }
-        public List<Movie> ActorsInMovie { get; set; } = new List<Movie>();
-        public List<Movie> DirectorsInMovie { get; set; } = new List<Movie>();
-        public List<ActorAward> Awards { get; set; } = new List<ActorAward>();
-        public List<Account> AccountsFavorite { get; set; } = new List<Account>();
+        public List<Movie> ActorsInMovie { get; set; } = new();
+        public List<Movie> DirectorsInMovie { get; set; } = new();
+        public List<ActorAward> Awards { get; set; } = new();
+        public List<Account> AccountsFavorite { get; set; } = new();
     }
 }

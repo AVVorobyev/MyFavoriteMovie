@@ -9,12 +9,12 @@ namespace MyFavoriteMovie.Core
     public class DomainResult
     {
         public string? Message { get; }
-        public bool Succes { get; }
+        public bool Success { get; }
 
 
         public DomainResult()
         {
-            Succes = true;
+            Success = true;
         }
 
         public DomainResult(string message)
