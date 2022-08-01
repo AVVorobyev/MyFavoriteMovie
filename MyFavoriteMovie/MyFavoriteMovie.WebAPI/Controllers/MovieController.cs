@@ -65,11 +65,10 @@ namespace MyFavoriteMovie.WebAPI.Controllers
 
             _logger.LogInformation("", result.Message ?? "Ok");
 
-            List<MovieDtoGet> movieDto = new();
+            List<MovieDtoGet> movieListDto = new();
 
             if (result.Success)
             {
-                movieDto = new();
                 var movies = result.Result!;
                 double averageRate;
 
@@ -77,7 +76,7 @@ namespace MyFavoriteMovie.WebAPI.Controllers
                 {
                     averageRate = GetAverageRate(movie);
 
-                    movieDto.Add(new MovieDtoGet()
+                    movieListDto.Add(new MovieDtoGet()
                     {
                         Id = movie.Id,
                         Name = movie.Name,
@@ -91,7 +90,7 @@ namespace MyFavoriteMovie.WebAPI.Controllers
                 }
             }
 
-            return new JsonResult(movieDto);
+            return new JsonResult(movieListDto);
         }
 
         [HttpPost]

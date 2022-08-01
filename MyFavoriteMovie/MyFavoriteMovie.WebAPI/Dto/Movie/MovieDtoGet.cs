@@ -9,7 +9,7 @@ namespace MyFavoriteMovie.WebAPI.Dto.Movie
         public DateTime? RealeseDate { get; set; }
         public TimeSpan? Duration { get; set; }
         public string? Poster { get; set; }
-        public List<Actor>? Actors { get; set; } = new();
+        public List<Core.Models.Actor>? Actors { get; set; } = new();
         public List<Genre>? Genres { get; set; } = new();
         public double AverageRate { get; set; }
     }
