@@ -33,7 +33,8 @@ namespace MyFavoriteMovie.Core.Repositories
             }
             catch (Exception e)
             {
-                _domainResult = DomainResult.Failed(e.Message);
+                _domainResult = DomainResult.Failed(e.Message + 
+                    $"{Environment.NewLine}" + e.InnerException);
             }
 
             return _domainResult;
@@ -50,7 +51,8 @@ namespace MyFavoriteMovie.Core.Repositories
             }
             catch (Exception e)
             {
-                _domainResult = DomainResult.Failed(e.Message);
+                _domainResult = DomainResult.Failed(e.Message +
+                    $"{Environment.NewLine}" + e.InnerException);
             }
 
             return _domainResult;
@@ -73,14 +75,15 @@ namespace MyFavoriteMovie.Core.Repositories
 
                 var result = await query.Skip(skip).Take(take).ToListAsync();
 
-                if (result != null && result.Count > 0)
+                if (result != null && result.Any())
                     _domainResult = DomainResult<IEnumerable<T>>.Succeeded(result);
                 else
                     throw new NotFoundException();
             }
             catch (Exception e)
             {
-                _domainResult = DomainResult<IEnumerable<T>>.Failed(e.Message);
+                _domainResult = DomainResult<IEnumerable<T>>.Failed(e.Message +
+                    $"{Environment.NewLine}" + e.InnerException);
             }
 
             return (DomainResult<IEnumerable<T>>)_domainResult;
@@ -115,7 +118,8 @@ namespace MyFavoriteMovie.Core.Repositories
             }
             catch (Exception e)
             {
-                _domainResult = DomainResult<T>.Failed(e.Message);
+                _domainResult = DomainResult<T>.Failed(e.Message +
+                    $"{Environment.NewLine}" + e.InnerException);
             }
 
             return (DomainResult<T>)_domainResult;

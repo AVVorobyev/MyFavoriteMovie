@@ -12,8 +12,10 @@ builder.Services.AddRouting();
 builder.Services.AddControllers();
 
 builder.Services.AddCors(cors =>
-    cors.AddPolicy("AllowOrigin", options =>
-        options.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()));
+    cors.AddDefaultPolicy(options =>
+        options.WithOrigins(
+            builder.Configuration.GetSection(
+                "frontend_url").ToString()!).AllowAnyMethod().AllowAnyHeader()));
 
 //JSON Serializer
 builder.Services.AddControllersWithViews()

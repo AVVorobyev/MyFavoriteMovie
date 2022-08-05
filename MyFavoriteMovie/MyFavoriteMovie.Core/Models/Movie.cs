@@ -25,7 +25,7 @@ namespace MyFavoriteMovie.Core.Models
         public string? Title { get; set; }
         public string? Poster { get; set; }
 
-        public List<MovieImage>? Images { get; set; }
+        public List<MovieImage> Images { get; set; } = new();
         public List<Actor> DirectedBy { get; set; } = new();
         public List<Actor> Actors { get; set; } = new();
         public List<Review> Reviews { get; set; } = new();
