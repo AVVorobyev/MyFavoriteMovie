@@ -50,7 +50,7 @@ export class Movies extends Component {
                                     to={"/Movie/Movie/" + movie.Id}
                                     className="btn">
                                     <td >{movie.Name}</td>
-                                    <td >{movie.Poster}</td>
+                                    <td >{movie.Title}</td>
                                     <td >{movie.RealeseDate}</td>
                                 </NavLink>
                             </tr>

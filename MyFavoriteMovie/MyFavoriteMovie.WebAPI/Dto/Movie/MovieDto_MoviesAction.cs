@@ -2,10 +2,10 @@
 
 namespace MyFavoriteMovie.WebAPI.Dto.Movie
 {
-    public class MovieDtoGet
+    public class MovieDto_MoviesAction
     {
-        public int Id {get; set; }
-        public string? Name {get; set; }
+        public int Id { get; set; }
+        public string? Name { get; set; }
         public DateTime? RealeseDate { get; set; }
         public TimeSpan? Duration { get; set; }
         public string? Poster { get; set; }

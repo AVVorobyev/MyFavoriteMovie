@@ -43,6 +43,7 @@ app.MapControllers();
 
 app.UseRouting();
 
+app.UseStaticFiles();
 
 app.UseAuthorization();
 

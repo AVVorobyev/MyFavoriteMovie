@@ -16,7 +16,7 @@ export class EditMovieModal extends Component {
             params: {
                 Id: e.target.Id.value,
                 Name: e.target.Name.value,
-                Poster: e.target.Poster.value
+                Title: e.target.Title.value
             }
         }).then(response => {
             alert(response.data);
@@ -57,11 +57,11 @@ export class EditMovieModal extends Component {
                                     placeholder="Name" />
                             </Form.Group>
 
-                            <Form.Group controlId="Poster">
-                                <Form.Label>Poster</Form.Label>
-                                <Form.Control type="text" name="Poster"
-                                    defaultValue={this.props.Poster}
-                                    placeholder="Poster" />
+                            <Form.Group controlId="Title">
+                                <Form.Label>Title</Form.Label>
+                                <Form.Control type="text" name="Title"
+                                    defaultValue={this.props.Title}
+                                    placeholder="Title" />
                             </Form.Group>
                             
                             <Form.Group>

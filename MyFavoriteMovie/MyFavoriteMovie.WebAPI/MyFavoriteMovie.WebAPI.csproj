@@ -22,4 +22,9 @@
     <ProjectReference Include="..\MyFavoriteMovie.Core\MyFavoriteMovie.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\" />
+    <Folder Include="wwwroot\Images\Posters\" />
+  </ItemGroup>
+
 </Project>

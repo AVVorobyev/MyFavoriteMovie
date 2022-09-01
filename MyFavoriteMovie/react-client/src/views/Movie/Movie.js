@@ -1,14 +1,16 @@
 import axios from "axios";
 import React, { Component } from "react";
-import { Button, ButtonToolbar } from "react-bootstrap";
+import { Button, ButtonToolbar, Image } from "react-bootstrap";
 import { NavLink, Navigate } from "react-router-dom";
 import { EditMovieModal } from "./EditMovieModal";
+
+const defaultPosterImage = '/Files/DefaultImages/defaultPosterImage.jpg';
 
 export class Movie extends Component {
 
     constructor(props) {
         super(props);
-        this.state = { movie: Object, redirect: false, editMovieShow: false };
+        this.state = { movie: [], redirect: false, editMovieShow: false, posterImage: String };
     }
 
     setRedirect() {
@@ -30,6 +32,13 @@ export class Movie extends Component {
             }
         }).then(response => {
             this.setState({ movie: response.data });
+
+            if (response.data.Poster === null || response.data.Poster === undefined) {
+                this.setState({ posterImage: defaultPosterImage });
+            }
+            else {
+                this.setState({ posterImage: response.data.Poster });
+            }
         })
     }
 
@@ -38,7 +47,6 @@ export class Movie extends Component {
     }
 
     deleteMovie(movie) {
-        console.log(movie);
         if (window.confirm('Are you sure?')) {
             axios({
                 method: "DELETE",
@@ -56,7 +64,8 @@ export class Movie extends Component {
     }
 
     render() {
-        const { movie } = this.state;
+        const { movie, posterImage } = this.state;
+
         return (
             <div>
                 {this.renderRedirect()}
@@ -64,8 +73,12 @@ export class Movie extends Component {
                     Movie page
                     <h2>MovieId = {movie.Id}</h2>
                     <h4>
+                        <Image width={100} height={200}
+                            src={posterImage}
+                            alt="poster"
+                        />
                         <h5 class="text-success">{movie.Name}</h5>
-                        <h5 class="text-success">{movie.Poster}</h5>
+                        <h5 class="text-success">{movie.Title}</h5>
                         <h5 class="text-success">{movie.RealeseDate}</h5>
                     </h4>
                 </h1>
@@ -81,7 +94,7 @@ export class Movie extends Component {
                         onHide={() => this.setState({ editMovieShow: false })}
                         Id={movie.Id}
                         Name={movie.Name}
-                        Poster={movie.Poster}>
+                        Title={movie.Title}>
                     </EditMovieModal>
                 </ButtonToolbar>
             </div>
