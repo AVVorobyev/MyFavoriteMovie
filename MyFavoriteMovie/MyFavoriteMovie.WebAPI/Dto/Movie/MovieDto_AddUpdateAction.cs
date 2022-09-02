@@ -2,8 +2,9 @@
 
 namespace MyFavoriteMovie.WebAPI.Dto.Movie
 {
-    public class MovieDto_AddAction
+    public class MovieDto_AddUpdateAction
     {
+        public int Id { get; set; }
         public string? Name { get; set; }
         public DateTime? RealeseDate { get; set; }
         public TimeSpan? Duration { get; set; }

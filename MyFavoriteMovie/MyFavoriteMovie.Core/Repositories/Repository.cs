@@ -89,16 +89,17 @@ namespace MyFavoriteMovie.Core.Repositories
             return (DomainResult<IEnumerable<T>>)_domainResult;
         }
 
-        public async Task<DomainResult<T>> GetByIdAsync(Expression<Func<T, bool>> filter, string? includeProperties = null)
+        public async Task<DomainResult<T>> GetByIdAsync(
+            Expression<Func<T, bool>> filter,
+            string? includeProperties = null,
+            bool asNoTracking = false)
         {
             try
             {
                 IQueryable<T> query = _dbSet;
 
                 if (filter != null)
-                {
-                    query = query.Where(filter);
-                }
+                    query = query.Where(filter);                
 
                 if (includeProperties != null)
                 {
@@ -108,6 +109,9 @@ namespace MyFavoriteMovie.Core.Repositories
                         query = query.Include(property);
                     }
                 }
+
+                if (asNoTracking)
+                    query = query.AsNoTracking();
 
                 var result = await query.FirstOrDefaultAsync();
 

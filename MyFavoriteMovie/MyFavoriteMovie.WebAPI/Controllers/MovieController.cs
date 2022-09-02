@@ -118,15 +118,17 @@ namespace MyFavoriteMovie.WebAPI.Controllers
 
         [HttpPost]
         [ActionName("Add")]
-        public async Task<IActionResult> AddAsync([FromForm]MovieDto_AddAction movieDto)
+        public async Task<IActionResult> AddAsync([FromForm]MovieDto_AddUpdateAction movieDto)
         {
+            if (movieDto == null) return BadRequest();
+
             string? posterName = null;
 
             if(movieDto.PosterFile != null)
             {
                 string paht = _environment.WebRootPath + WebConsts.MoviePosterDirectory;
 
-                posterName = await FileSaver.SaveAsync(
+                posterName = await FileManager.SaveAsync(
                     movieDto.PosterFile,
                     paht);
             }
@@ -137,9 +139,9 @@ namespace MyFavoriteMovie.WebAPI.Controllers
                 RealeseDate = movieDto.RealeseDate,
                 Duration = movieDto.Duration,
                 Actors = movieDto.Actors,
-                Awards = movieDto.Awards, //?
-                Images = movieDto.Images, //?
-                Episodes = movieDto.Episodes, //?
+                Awards = movieDto.Awards,
+                Images = movieDto.Images,
+                Episodes = movieDto.Episodes,
                 Genres = movieDto.Genres,
                 Title = movieDto.Title,
                 Poster = posterName,
@@ -154,11 +156,49 @@ namespace MyFavoriteMovie.WebAPI.Controllers
 
         [HttpPut]
         [ActionName("Update")]
-        public async Task<IActionResult> UpdateAsync(Movie movie)
+        public async Task<IActionResult> UpdateAsync([FromForm]MovieDto_AddUpdateAction movieDto)
         {
-            var result = await _movieRepository.UpdateAsync(movie);
+            if (movieDto == null) return BadRequest();
 
-            return new JsonResult(result.Message ?? "Successful!");
+            try
+            {
+                var result = await _movieRepository.GetByIdAsync(filter: m => m.Id == movieDto.Id, asNoTracking: true);
+
+                if(result == null) return NotFound();
+
+                string? newPoster = null;
+                var path = _environment.WebRootPath + WebConsts.MoviePosterDirectory;
+                var oldPoster = result.Result!.Poster;
+
+                if (oldPoster != null) FileManager.Delete(oldPoster, path);
+
+                if(movieDto.PosterFile != null)
+                    newPoster = await FileManager.SaveAsync(movieDto.PosterFile!, path);
+
+                var movie = new Movie()
+                {
+                    Id = movieDto.Id,
+                    Name = movieDto.Name,
+                    RealeseDate = movieDto.RealeseDate,
+                    Duration = movieDto.Duration,
+                    Actors = movieDto.Actors,
+                    Awards = movieDto.Awards,
+                    Images = movieDto.Images,
+                    Episodes = movieDto.Episodes,
+                    Genres = movieDto.Genres,
+                    Title = movieDto.Title,
+                    Poster = newPoster,
+                    DirectedBy = movieDto.DirectedBy
+                };
+
+                await _movieRepository.UpdateAsync(movie);
+
+                return Ok();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
         [HttpDelete]

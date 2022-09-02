@@ -94,7 +94,8 @@ export class Movie extends Component {
                         onHide={() => this.setState({ editMovieShow: false })}
                         Id={movie.Id}
                         Name={movie.Name}
-                        Title={movie.Title}>
+                        Title={movie.Title}
+                        Poster={posterImage}>
                     </EditMovieModal>
                 </ButtonToolbar>
             </div>
