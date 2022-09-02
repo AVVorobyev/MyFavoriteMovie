@@ -47,13 +47,20 @@ export class Movie extends Component {
     }
 
     deleteMovie(movie) {
+        const formData = new FormData();
+        formData.append("Id", movie.Id);
+
+        if (this.state.posterImage !== defaultPosterImage) {
+            
+            let fileName = this.state.posterImage.split('/').pop()
+            formData.append("Poster", fileName);
+        }
+
         if (window.confirm('Are you sure?')) {
             axios({
                 method: "DELETE",
                 url: process.env.REACT_APP_API_URL_Movie + 'Delete',
-                params: {
-                    id: movie.Id
-                }
+                data: formData
             }).then(response => {
                 alert(response.data);
                 this.setRedirect();

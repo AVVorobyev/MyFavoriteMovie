@@ -203,11 +203,25 @@ namespace MyFavoriteMovie.WebAPI.Controllers
 
         [HttpDelete]
         [ActionName("Delete")]
-        public async Task<IActionResult> DeleteAsync(Movie movie)
+        public async Task<IActionResult> DeleteAsync([FromForm]Movie movie)
         {
-            var result = await _movieRepository.DeleteAsync(movie);
+            if (movie == null) return BadRequest();
 
-            return new JsonResult(result.Message ?? "Successful!");
+            try
+            {
+                var path = _environment.WebRootPath + WebConsts.MoviePosterDirectory;
+
+                if (movie.Poster != null)
+                    FileManager.Delete(movie.Poster, path);
+
+                await _movieRepository.DeleteAsync(movie);
+
+                return Ok();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
         [NonAction]
