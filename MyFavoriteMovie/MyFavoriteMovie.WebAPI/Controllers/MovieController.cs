@@ -26,22 +26,19 @@ namespace MyFavoriteMovie.WebAPI.Controllers
         [ActionName("Movie")]
         public async Task<IActionResult> GetByIdAsync(int id)
         {
-            MovieDto_MovieAction? movieDto = null;
-
             try
             {
                 var result = await _movieRepository.GetByIdAsync(m => m.Id == id,
                     $"{nameof(Movie.DirectedBy)},{nameof(Movie.Actors)},{nameof(Movie.Reviews)}," +
                     $"{nameof(Movie.Awards)},{nameof(Movie.Genres)},{nameof(Movie.MovieRates)}");
 
-                string? poster = null;
-                string path = _environment.WebRootPath + WebConsts.MoviePosterDirectory;
-
-
                 if (result.Success)
                 {
+                    string? poster = null;
+                    string path = _environment.WebRootPath + WebConsts.MoviePosterDirectory;
                     var movie = result.Result!;
                     double averageRate = GetAverageRate(movie);
+                    MovieDto_MovieAction? movieDto = null;
 
                     if (movie.Poster != null)
                     {
@@ -68,6 +65,7 @@ namespace MyFavoriteMovie.WebAPI.Controllers
                         AverageRate = averageRate
                     };
 
+                    return Ok(movieDto);
                 }
             }
             catch (Exception)
@@ -75,45 +73,50 @@ namespace MyFavoriteMovie.WebAPI.Controllers
                 throw;
             }
 
-            if (movieDto == null) return NotFound();
-
-            return new JsonResult(movieDto);
+            return NotFound();
         }
 
         [HttpGet]
         [ActionName("Movies")]
         public async Task<IActionResult> GetAsync(int skip = 0, int take = 50)
-        {
-            var result = await _movieRepository.GetAsync(skip, take,
-                includeProperties: $"{nameof(Movie.Actors)}," +
-                $"{nameof(Movie.Genres)},{nameof(Movie.MovieRates)}");
-
-            List<MovieDto_MoviesAction> movieListDto = new();
-
-            if (result.Success)
+        {           
+            try
             {
-                var movies = result.Result!;
-                double averageRate;
+                var result = await _movieRepository.GetAsync(skip, take,
+                    includeProperties: $"{nameof(Movie.Actors)}," +
+                    $"{nameof(Movie.Genres)},{nameof(Movie.MovieRates)}");
 
-                foreach (var movie in movies!)
+                if (result.Success)
                 {
-                    averageRate = GetAverageRate(movie);
+                    var movies = result.Result!;
+                    double averageRate;
+                    List<MovieDto_MoviesAction> movieListDto = new();
 
-                    movieListDto.Add(new MovieDto_MoviesAction()
+                    foreach (var movie in movies!)
                     {
-                        Id = movie.Id,
-                        Name = movie.Name,
-                        RealeseDate = movie.RealeseDate,
-                        Duration = movie.Duration,
-                        Poster = movie.Poster,
-                        Actors = movie.Actors,
-                        Genres = movie.Genres,
-                        AverageRate = averageRate
-                    });
+                        averageRate = GetAverageRate(movie);
+
+                        movieListDto.Add(new MovieDto_MoviesAction()
+                        {
+                            Id = movie.Id,
+                            Name = movie.Name,
+                            RealeseDate = movie.RealeseDate,
+                            Duration = movie.Duration,
+                            Poster = movie.Poster,
+                            Actors = movie.Actors,
+                            Genres = movie.Genres,
+                            AverageRate = averageRate
+                        });
+                    }
+                        return Ok(movieListDto);
                 }
             }
+            catch (Exception)
+            {
+                throw;
+            }
 
-            return new JsonResult(movieListDto);
+            return NotFound();
         }
 
         [HttpPost]
@@ -122,36 +125,42 @@ namespace MyFavoriteMovie.WebAPI.Controllers
         {
             if (movieDto == null) return BadRequest();
 
-            string? posterName = null;
-
-            if(movieDto.PosterFile != null)
+            try
             {
-                string paht = _environment.WebRootPath + WebConsts.MoviePosterDirectory;
+                string? posterName = null;
 
-                posterName = await FileManager.SaveAsync(
-                    movieDto.PosterFile,
-                    paht);
+                if (movieDto.PosterFile != null)
+                {
+                    string paht = _environment.WebRootPath + WebConsts.MoviePosterDirectory;
+
+                    posterName = await FileManager.SaveAsync(
+                        movieDto.PosterFile,
+                        paht);
+                }
+
+                var movie = new Movie()
+                {
+                    Name = movieDto.Name,
+                    RealeseDate = new DateTime(),
+                    Duration = movieDto.Duration,
+                    Actors = movieDto.Actors,
+                    Awards = movieDto.Awards,
+                    Images = movieDto.Images,
+                    Episodes = movieDto.Episodes,
+                    Genres = movieDto.Genres,
+                    Title = movieDto.Title,
+                    Poster = posterName,
+                    DirectedBy = movieDto.DirectedBy
+                };
+
+                var result = await _movieRepository.AddAsync(movie);
+
+                return Ok();
             }
-
-            var movie = new Movie()
+            catch (Exception)
             {
-                Name = movieDto.Name,
-                RealeseDate = movieDto.RealeseDate,
-                Duration = movieDto.Duration,
-                Actors = movieDto.Actors,
-                Awards = movieDto.Awards,
-                Images = movieDto.Images,
-                Episodes = movieDto.Episodes,
-                Genres = movieDto.Genres,
-                Title = movieDto.Title,
-                Poster = posterName,
-                DirectedBy = movieDto.DirectedBy
-
-            };
-
-            var result = await _movieRepository.AddAsync(movie);
-
-            return new JsonResult(result.Message ?? "Successful!");
+                throw;
+            }
         }
 
         [HttpPut]
