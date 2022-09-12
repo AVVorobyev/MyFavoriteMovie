@@ -3,7 +3,7 @@ import React, { Component } from "react";
 import { Button, Form, Modal, Image } from "react-bootstrap";
 import TimePicker from 'react-time-picker';
 
-const defaultPosterImage = '/Files/DefaultImages/defaultPosterImage.jpg';
+const defaultPosterImage = process.env.REACT_APP_Default_Poster_Image;
 let duration;
 
 export class EditMovieModal extends Component {

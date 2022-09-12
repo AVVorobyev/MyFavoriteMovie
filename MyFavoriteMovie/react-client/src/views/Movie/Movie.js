@@ -5,7 +5,7 @@ import { NavLink, Navigate } from "react-router-dom";
 import { EditMovieModal } from "./EditMovieModal";
 import Moment from 'react-moment';
 
-const defaultPosterImage = '/Files/DefaultImages/defaultPosterImage.jpg';
+const defaultPosterImage = process.env.REACT_APP_Default_Poster_Image;
 
 export class Movie extends Component {
 
