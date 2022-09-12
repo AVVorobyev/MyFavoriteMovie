@@ -6,8 +6,8 @@ namespace MyFavoriteMovie.WebAPI.Dto.Movie
     {
         public int Id { get; set; }
         public string? Name { get; set; }
-        public DateTime? RealeseDate { get; set; }
-        public TimeSpan? Duration { get; set; }
+        public string? ReleaseDate { get; set; }
+        public string? Duration { get; set; }
         public string? Title { get; set; }
         public IFormFile? PosterFile { get; set; }
 

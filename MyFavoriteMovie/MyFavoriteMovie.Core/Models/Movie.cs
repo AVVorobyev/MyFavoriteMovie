@@ -17,7 +17,7 @@ namespace MyFavoriteMovie.Core.Models
         [MinLength(1)]
         [MaxLength(100)]
         public string? Name { get; set; }
-        public DateTime? RealeseDate { get; set; }
+        public DateTime? ReleaseDate { get; set; }
         public TimeSpan? Duration { get; set; }
 
         [MinLength(1)]

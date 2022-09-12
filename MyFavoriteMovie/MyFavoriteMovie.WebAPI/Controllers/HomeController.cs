@@ -34,7 +34,7 @@ namespace MyFavoriteMovie.WebAPI.Controllers
                         Id = movie.Id,
                         Name = movie.Name,
                         Poster = movie.Poster,
-                        RealeseDate = movie.RealeseDate
+                        RealeseDate = movie.ReleaseDate
                     });
                 }
             }

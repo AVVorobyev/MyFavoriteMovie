@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MyFavoriteMovie.Core.Contexts;
 
@@ -11,9 +12,10 @@ using MyFavoriteMovie.Core.Contexts;
 namespace MyFavoriteMovie.Core.Migrations
 {
     [DbContext(typeof(MSSQLDbContext))]
-    partial class MSSQLDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220906090215_remane_RealeseDate_to_ReleaseDate_in_Movie")]
+    partial class remane_RealeseDate_to_ReleaseDate_in_Movie
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

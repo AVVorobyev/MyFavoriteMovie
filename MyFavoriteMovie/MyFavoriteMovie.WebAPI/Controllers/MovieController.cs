@@ -53,7 +53,7 @@ namespace MyFavoriteMovie.WebAPI.Controllers
                     {
                         Id = movie.Id,
                         Name = movie.Name,
-                        RealeseDate = movie.RealeseDate,
+                        ReleaseDate = movie.ReleaseDate,
                         Duration = movie.Duration,
                         Title = movie.Title,
                         Poster = poster,
@@ -100,7 +100,7 @@ namespace MyFavoriteMovie.WebAPI.Controllers
                         {
                             Id = movie.Id,
                             Name = movie.Name,
-                            RealeseDate = movie.RealeseDate,
+                            ReleaseDate = movie.ReleaseDate,
                             Duration = movie.Duration,
                             Poster = movie.Poster,
                             Actors = movie.Actors,
@@ -141,8 +141,8 @@ namespace MyFavoriteMovie.WebAPI.Controllers
                 var movie = new Movie()
                 {
                     Name = movieDto.Name,
-                    RealeseDate = new DateTime(),
-                    Duration = movieDto.Duration,
+                    ReleaseDate = ParseToDateTime(movieDto.ReleaseDate),
+                    Duration = ParseToTimeSpan(movieDto.Duration),
                     Actors = movieDto.Actors,
                     Awards = movieDto.Awards,
                     Images = movieDto.Images,
@@ -188,8 +188,8 @@ namespace MyFavoriteMovie.WebAPI.Controllers
                 {
                     Id = movieDto.Id,
                     Name = movieDto.Name,
-                    RealeseDate = movieDto.RealeseDate,
-                    Duration = movieDto.Duration,
+                    ReleaseDate = ParseToDateTime(movieDto.ReleaseDate),
+                    Duration = ParseToTimeSpan(movieDto.Duration),
                     Actors = movieDto.Actors,
                     Awards = movieDto.Awards,
                     Images = movieDto.Images,
@@ -240,6 +240,24 @@ namespace MyFavoriteMovie.WebAPI.Controllers
                 return movie.MovieRates.Average(r => r.Rate);
 
             return 0;
+        }
+
+        [NonAction]
+        private DateTime? ParseToDateTime(string? str)
+        {
+            if (DateTime.TryParse(str, out DateTime result))
+                return result;
+
+            return null;
+        }
+
+        [NonAction]
+        private TimeSpan? ParseToTimeSpan(string? str)
+        {
+            if(TimeSpan.TryParse(str, out TimeSpan result))           
+                return result;            
+
+            return null;
         }
     }
 }

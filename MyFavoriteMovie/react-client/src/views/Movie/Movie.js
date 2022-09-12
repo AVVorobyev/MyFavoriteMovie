@@ -103,7 +103,7 @@ export class Movie extends Component {
                         />
                         <h5 class="text-success">{movie.Name}</h5>
                         <h5 class="text-success">{movie.Title}</h5>
-                        <h5 class="text-success">Realese Date: {this.formatDate(movie.RealeseDate)}</h5>
+                        <h5 class="text-success">Release Date: {this.formatDate(movie.ReleaseDate)}</h5>
                         <h5 class="text-success">Duration: {this.formatTimeSpan(movie.Duration)}</h5>
                     </h4>
                 </h1>
@@ -120,6 +120,8 @@ export class Movie extends Component {
                         Id={movie.Id}
                         Name={movie.Name}
                         Title={movie.Title}
+                        ReleaseDate={movie.ReleaseDate}
+                        Duration={movie.Duration}
                         Poster={posterImage}>
                     </EditMovieModal>
                 </ButtonToolbar>

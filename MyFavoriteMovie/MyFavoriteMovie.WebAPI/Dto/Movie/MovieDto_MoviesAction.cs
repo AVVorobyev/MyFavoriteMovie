@@ -6,7 +6,7 @@ namespace MyFavoriteMovie.WebAPI.Dto.Movie
     {
         public int Id { get; set; }
         public string? Name { get; set; }
-        public DateTime? RealeseDate { get; set; }
+        public DateTime? ReleaseDate { get; set; }
         public TimeSpan? Duration { get; set; }
         public string? Poster { get; set; }
         public List<Core.Models.Actor>? Actors { get; set; } = new();

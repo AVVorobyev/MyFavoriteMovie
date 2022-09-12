@@ -51,7 +51,7 @@ export class Movies extends Component {
                                     className="btn">
                                     <td >{movie.Name}</td>
                                     <td >{movie.Title}</td>
-                                    <td >{movie.RealeseDate}</td>
+                                    <td >{movie.ReleaseDate}</td>
                                 </NavLink>
                             </tr>
                         )}

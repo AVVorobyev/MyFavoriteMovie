@@ -1,8 +1,10 @@
 import axios from "axios";
 import React, { Component } from "react";
 import { Button, Form, Modal, Image } from "react-bootstrap";
+import TimePicker from 'react-time-picker';
 
 const defaultPosterImage = '/Files/DefaultImages/defaultPosterImage.jpg';
+let duration;
 
 export class EditMovieModal extends Component {
     constructor(props) {
@@ -10,16 +12,19 @@ export class EditMovieModal extends Component {
         this.state = { newPoster: defaultPosterImage };
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleFileSelected = this.handleFileSelected.bind(this);
+        
     }
 
     handleSubmit(e) {
         e.preventDefault();
-
+        
         const formData = new FormData();
         formData.append("Id", e.target.Id.value);
         formData.append("Name", e.target.Name.value);
         formData.append("Title", e.target.Title.value);
         formData.append("PosterFile", this.posterFileToSent);
+        formData.append("ReleaseDate", e.target.ReleaseDate.value);
+        formData.append("Duration", duration);
 
         axios({
             method: 'PUT',
@@ -43,8 +48,14 @@ export class EditMovieModal extends Component {
         this.setState({ newPoster: URL.createObjectURL(e.target.files[0]) });
     }
 
+    formatDate(string) {
+        let moment = require('moment');
+        return moment(string).format("YYYY-MM-DD");
+    }
+
     render() {
         let { newPoster } = this.state;
+        duration = this.props.Duration;
 
         return (
             <div className='conteiner'>
@@ -79,6 +90,24 @@ export class EditMovieModal extends Component {
                                     placeholder="Title" />
                             </Form.Group>
 
+                            <Form.Group controlId="ReleaseDate">
+                                <Form.Label>Release Date:</Form.Label>
+                                <Form.Control type="date" defaultValue={this.formatDate(this.props.ReleaseDate)}
+                                    name="ReleaseDate" placeholder="ReleaseDate"></Form.Control>
+                            </Form.Group>
+
+                            <Form.Group controlId="Duration">
+                                <Form.Label>Duration</Form.Label>
+                                <TimePicker
+                                    value={this.props.Duration}
+                                    onChange={(e) => {
+                                        duration = e
+                                    }}
+                                    clearIcon={null}
+                                    format="HH:mm" hourPlaceholder="hh"
+                                    minutePlaceholder="mm" disableClock="true" name="Duration" placeholder="Duration"></TimePicker>
+                            </Form.Group>
+
                             <Form.Label>Old Poster</Form.Label>
                             <Form.Group>
                                 <Image width="100px" height="100px" src={this.props.Poster} />
@@ -101,7 +130,7 @@ export class EditMovieModal extends Component {
                         <Button onClick={this.props.onHide}>Close</Button>
                     </Modal.Footer>
                 </Modal>
-            </div>
+            </div >
         )
     }
 }

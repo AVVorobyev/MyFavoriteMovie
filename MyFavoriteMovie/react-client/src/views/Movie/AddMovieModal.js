@@ -11,6 +11,7 @@ export class AddMovieModal extends Component {
         this.state = { posterPreview: defaultPosterImage }
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleFileSelected = this.handleFileSelected.bind(this);
+        
     }
 
     handleDefaultPoster() {
@@ -24,7 +25,7 @@ export class AddMovieModal extends Component {
         formData.append("Name", e.target.Name.value);
         formData.append("Title", e.target.Title.value);
         formData.append("PosterFile", this.posterFileToSent);
-        formData.append("RealeseDate", e.target.RealeseDate.value);
+        formData.append("ReleaseDate", e.target.ReleaseDate.value);
         formData.append("Duration", this.duration);
 
         axios({
@@ -72,11 +73,11 @@ export class AddMovieModal extends Component {
                                     <Form.Control type="text" name="Title" placeholder="Title"></Form.Control>
                                 </Form.Group>
 
-                                <Form.Group controlId="RealeseDate">
-                                    <Form.Label>Realese Date:</Form.Label>
-                                    <Form.Control type="date" name="RealeseDate" placeholder="RealeseDate"></Form.Control>
+                                <Form.Group controlId="ReleaseDate">
+                                    <Form.Label>Release Date:</Form.Label>
+                                    <Form.Control type="date" name="ReleaseDate" placeholder="ReleaseDate"></Form.Control>
                                 </Form.Group>
-                                
+
                                 <Form.Group controlId="Duration">
                                     <Form.Label>Duration (in minutes):</Form.Label>
                                     <TimePicker
