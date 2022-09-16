@@ -4,8 +4,9 @@ import { Button, ButtonToolbar, Image } from "react-bootstrap";
 import { NavLink, Navigate } from "react-router-dom";
 import { EditMovieModal } from "./EditMovieModal";
 import Moment from 'react-moment';
+import formatDate from '../../Utiles/Parser';
 
-const defaultPosterImage = process.env.REACT_APP_Default_Poster_Image;
+const defaultPosterImage = process.env.REACT_APP_Default_Images + "defaultPosterImage.jpg";
 
 export class Movie extends Component {
 
@@ -52,7 +53,7 @@ export class Movie extends Component {
         formData.append("Id", movie.Id);
 
         if (this.state.posterImage !== defaultPosterImage) {
-            let fileName = this.state.posterImage.split('/').pop()
+            let fileName = this.state.posterImage.split('/').pop();
             formData.append("Poster", fileName);
         }
 
@@ -70,12 +71,12 @@ export class Movie extends Component {
         }
     }
 
-    formatDate(string) {
-        if (string == null)
-            return "-";
-        else
-            return <Moment format="DD.MM.YYYY">{string}</Moment>
-    }
+    // formatDate(string) {
+    //     if (string == null)
+    //         return "-";
+    //     else
+    //         return <Moment format="DD.MM.YYYY">{string}</Moment>
+    // }
 
     formatTimeSpan(string) {
         if (string == null)
@@ -103,7 +104,8 @@ export class Movie extends Component {
                         />
                         <h5 class="text-success">{movie.Name}</h5>
                         <h5 class="text-success">{movie.Title}</h5>
-                        <h5 class="text-success">Release Date: {this.formatDate(movie.ReleaseDate)}</h5>
+                        {/* <h5 class="text-success">Release Date: {this.formatDate(movie.ReleaseDate)}</h5> */}
+                        <h5 class="text-success">Release Date: {formatDate(movie.ReleaseDate)}</h5>
                         <h5 class="text-success">Duration: {this.formatTimeSpan(movie.Duration)}</h5>
                     </h4>
                 </h1>

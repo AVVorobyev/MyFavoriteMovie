@@ -7,6 +7,7 @@ import {
 import { Movies } from './views/Movie/Movies';
 import { MovieByIdWrapper } from './views/Movie/MovieByIdWrapper';
 import { Actors } from './views/Actor/Actors';
+import { ActorByIdWrapper } from './views/Actor/ActorByIdWrapper';
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
           <Route path='/Movie/Movies' element={<Movies />} />
           <Route path='/Movie/Movie/:movieId' element={<MovieByIdWrapper />} />
           <Route path='/Actor/Actors' element={<Actors />} />
+          <Route path='/Actor/Actor/:actorId' element={<ActorByIdWrapper />} />
         </Routes>
       </Router>
 

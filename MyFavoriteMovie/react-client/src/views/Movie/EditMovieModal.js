@@ -3,7 +3,7 @@ import React, { Component } from "react";
 import { Button, Form, Modal, Image } from "react-bootstrap";
 import TimePicker from 'react-time-picker';
 
-const defaultPosterImage = process.env.REACT_APP_Default_Poster_Image;
+const defaultPosterImage = process.env.REACT_APP_Default_Images + "defaultPosterImage.jpg";
 let duration;
 
 export class EditMovieModal extends Component {
@@ -56,12 +56,12 @@ export class EditMovieModal extends Component {
     render() {
         let { newPoster } = this.state;
         duration = this.props.Duration;
-
+                
         return (
             <div className='conteiner'>
                 <Modal
                     {...this.props}>
-                    <Modal.Header closeButton>
+                    <Modal.Header >
                         <Modal.Title id="contained-modal-title-vcenter">
                             Edit Movie
                         </Modal.Title>

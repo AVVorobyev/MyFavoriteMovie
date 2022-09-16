@@ -3,7 +3,7 @@ import React, { Component } from "react";
 import { Modal, Button, Col, Form, Image } from 'react-bootstrap';
 import TimePicker from 'react-time-picker';
 
-const defaultPosterImage = process.env.REACT_APP_Default_Poster_Image;
+const defaultPosterImage = process.env.REACT_APP_Default_Images + "defaultPosterImage.jpg";
 
 export class AddMovieModal extends Component {
     constructor(props) {
@@ -11,7 +11,6 @@ export class AddMovieModal extends Component {
         this.state = { posterPreview: defaultPosterImage }
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleFileSelected = this.handleFileSelected.bind(this);
-        
     }
 
     handleDefaultPoster() {

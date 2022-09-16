@@ -141,8 +141,8 @@ namespace MyFavoriteMovie.WebAPI.Controllers
                 var movie = new Movie()
                 {
                     Name = movieDto.Name,
-                    ReleaseDate = ParseToDateTime(movieDto.ReleaseDate),
-                    Duration = ParseToTimeSpan(movieDto.Duration),
+                    ReleaseDate = Parser.ParseToDateTime(movieDto.ReleaseDate),
+                    Duration = Parser.ParseToTimeSpan(movieDto.Duration),
                     Actors = movieDto.Actors,
                     Awards = movieDto.Awards,
                     Images = movieDto.Images,
@@ -153,7 +153,7 @@ namespace MyFavoriteMovie.WebAPI.Controllers
                     DirectedBy = movieDto.DirectedBy
                 };
 
-                var result = await _movieRepository.AddAsync(movie);
+                await _movieRepository.AddAsync(movie);
 
                 return Ok();
             }
@@ -188,8 +188,8 @@ namespace MyFavoriteMovie.WebAPI.Controllers
                 {
                     Id = movieDto.Id,
                     Name = movieDto.Name,
-                    ReleaseDate = ParseToDateTime(movieDto.ReleaseDate),
-                    Duration = ParseToTimeSpan(movieDto.Duration),
+                    ReleaseDate = Parser.ParseToDateTime(movieDto.ReleaseDate),
+                    Duration = Parser.ParseToTimeSpan(movieDto.Duration),
                     Actors = movieDto.Actors,
                     Awards = movieDto.Awards,
                     Images = movieDto.Images,
@@ -240,24 +240,6 @@ namespace MyFavoriteMovie.WebAPI.Controllers
                 return movie.MovieRates.Average(r => r.Rate);
 
             return 0;
-        }
-
-        [NonAction]
-        private DateTime? ParseToDateTime(string? str)
-        {
-            if (DateTime.TryParse(str, out DateTime result))
-                return result;
-
-            return null;
-        }
-
-        [NonAction]
-        private TimeSpan? ParseToTimeSpan(string? str)
-        {
-            if(TimeSpan.TryParse(str, out TimeSpan result))           
-                return result;            
-
-            return null;
         }
     }
 }

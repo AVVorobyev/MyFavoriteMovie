@@ -2,16 +2,19 @@
 using MyFavoriteMovie.Core.Models;
 using MyFavoriteMovie.Core.Repositories.Interfaces;
 using MyFavoriteMovie.WebAPI.Dto.Actor;
+using MyFavoriteMovie.WebAPI.Utiles;
 
 namespace MyFavoriteMovie.WebAPI.Controllers
 {
     public class ActorController : Controller
     {
         private readonly IActorRepository _actorRepository;
+        private readonly IWebHostEnvironment _environment;
 
-        public ActorController(IActorRepository actorRepository)
+        public ActorController(IActorRepository actorRepository, IWebHostEnvironment environment)
         {
             _actorRepository = actorRepository;
+            _environment = environment;
         }
 
         [HttpGet]
@@ -31,6 +34,16 @@ namespace MyFavoriteMovie.WebAPI.Controllers
                 if (result.Success)
                 {
                     var actor = result.Result!;
+                    string? avatarImage = null;
+
+                    if(actor.AvatarImage != null)
+                    {
+                        var path = _environment.WebRootPath + WebConsts.ActorAvatarDirectory;
+
+                        if (System.IO.File.Exists(path + actor.AvatarImage))
+                            avatarImage = $"{Request.Scheme}://{Request.Host}{Request.PathBase}" +
+                                $"{WebConsts.ActorAvatarDirectory}{actor.AvatarImage}";
+                    }
 
                     actorDto = new ActorDtoGet()
                     {
@@ -40,7 +53,7 @@ namespace MyFavoriteMovie.WebAPI.Controllers
                         Height = actor.Height,
                         BirthDate = actor.BirthDate,
                         DeathDate = actor.DeathDate,
-                        AvatarImage = actor.AvatarImage,
+                        AvatarImage = avatarImage,
                         ActorsInMovie = actor.ActorsInMovie,
                         DirectorsInMovie = actor.DirectorsInMovie,
                         Awards = actor.Awards
@@ -94,29 +107,111 @@ namespace MyFavoriteMovie.WebAPI.Controllers
 
         [HttpPost]
         [ActionName("Add")]
-        public async Task<IActionResult> AddAsync(Actor actor)
+        public async Task<IActionResult> AddAsync([FromForm]ActorDto_AddUpdateAction actorDto)
         {
-            var result = await _actorRepository.AddAsync(actor);
+            if (actorDto == null) return BadRequest();
 
-            return new JsonResult(result.Message ?? "Successful!");
+            try
+            {
+                string? avatarImage = null;
+
+                if(actorDto.AvatarImage != null)
+                {
+                    var path = _environment.WebRootPath + WebConsts.ActorAvatarDirectory;
+                    avatarImage = await FileManager.SaveAsync(actorDto.AvatarImage, path);
+                }
+                                
+                var actor = new Actor()
+                {
+                    Name = actorDto.Name,
+                    Surname = actorDto.Surname,
+                    Height = Parser.ParseToHeight(actorDto.Height),
+                    BirthDate = Parser.ParseToDateTime(actorDto.BirthDate),
+                    DeathDate = Parser.ParseToDateTime(actorDto.DeathDate),
+                    AvatarImage = avatarImage,
+                    DirectorsInMovie = actorDto.DirectorsInMovie,
+                    ActorsInMovie = actorDto.ActorsInMovie,
+                    Awards = actorDto.Awards,
+                    Images = actorDto.Images
+                };
+
+                await _actorRepository.AddAsync(actor);
+
+                return Ok();
+            }
+            catch (Exception)
+            {
+                throw;
+            }           
         }
 
         [HttpPut]
         [ActionName("Update")]
-        public async Task<IActionResult> UpdateAsync(Actor actor)
+        public async Task<IActionResult> UpdateAsync([FromForm]ActorDto_AddUpdateAction actorDto)
         {
-            var result = await _actorRepository.UpdateAsync(actor);
+            if(actorDto == null) return BadRequest();
 
-            return new JsonResult(result.Message ?? "Successful!");
+            try
+            {
+                var result = await _actorRepository.GetByIdAsync(filter: a => a.Id == actorDto.Id, asNoTracking: true);
+
+                if (!result.Success) return NotFound();
+
+                var oldAvatarImage = result.Result!.AvatarImage;
+                var path = _environment.WebRootPath + WebConsts.ActorAvatarDirectory;
+                string? newAvatarImage = null;
+
+                if (oldAvatarImage != null) FileManager.Delete(oldAvatarImage, path);
+
+                if (actorDto.AvatarImage != null) 
+                    newAvatarImage = await FileManager.SaveAsync(actorDto.AvatarImage, path);
+
+                var actor = new Actor()
+                {
+                    Id = actorDto.Id,
+                    Name = actorDto.Name,
+                    Surname = actorDto.Surname,
+                    Height = Parser.ParseToHeight(actorDto.Height),
+                    BirthDate = Parser.ParseToDateTime(actorDto.BirthDate),
+                    DeathDate = Parser.ParseToDateTime(actorDto.DeathDate),
+                    AvatarImage = newAvatarImage,
+                    ActorsInMovie = actorDto.ActorsInMovie,
+                    DirectorsInMovie = actorDto.DirectorsInMovie,
+                    Awards = actorDto.Awards
+                };
+
+                await _actorRepository.UpdateAsync(actor);
+
+                return Ok();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
         [HttpDelete]
         [ActionName("Delete")]
-        public async Task<IActionResult> DeleteAsync(Actor actor)
+        public async Task<IActionResult> DeleteAsync([FromForm]Actor actor)
         {
-            var result = await _actorRepository.DeleteAsync(actor);
+            if (actor == null) return BadRequest();
 
-            return new JsonResult(result.Message ?? "Successful!");
+            try
+            {
+                if(actor.AvatarImage != null)
+                {
+                    var path = _environment.WebRootPath + WebConsts.ActorAvatarDirectory;
+                    FileManager.Delete(actor.AvatarImage, path);
+                }
+
+                await _actorRepository.DeleteAsync(actor);
+
+                return Ok();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
     }
 }
