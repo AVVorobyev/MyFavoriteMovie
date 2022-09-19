@@ -22,7 +22,7 @@ export class AddMovieModal extends Component {
 
         const formData = new FormData();
         formData.append("Name", e.target.Name.value);
-        formData.append("Title", e.target.Title.value);
+        formData.append("Description", e.target.Description.value);
         formData.append("PosterFile", this.posterFileToSent);
         formData.append("ReleaseDate", e.target.ReleaseDate.value);
         formData.append("Duration", this.duration);
@@ -67,9 +67,9 @@ export class AddMovieModal extends Component {
                                     <Form.Control type="text" name="Name" requaried placeholder="Name"></Form.Control>
                                 </Form.Group>
 
-                                <Form.Group controlId="Title">
-                                    <Form.Label>Movie Title:</Form.Label>
-                                    <Form.Control type="text" name="Title" placeholder="Title"></Form.Control>
+                                <Form.Group controlId="Description">
+                                    <Form.Label>Movie Description:</Form.Label>
+                                    <Form.Control type="text" name="Description" placeholder="Description"></Form.Control>
                                 </Form.Group>
 
                                 <Form.Group controlId="ReleaseDate">

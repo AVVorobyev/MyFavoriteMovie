@@ -21,7 +21,7 @@ export class EditMovieModal extends Component {
         const formData = new FormData();
         formData.append("Id", e.target.Id.value);
         formData.append("Name", e.target.Name.value);
-        formData.append("Title", e.target.Title.value);
+        formData.append("Description", e.target.Description.value);
         formData.append("PosterFile", this.posterFileToSent);
         formData.append("ReleaseDate", e.target.ReleaseDate.value);
         formData.append("Duration", duration);
@@ -83,11 +83,11 @@ export class EditMovieModal extends Component {
                                     placeholder="Name" />
                             </Form.Group>
 
-                            <Form.Group controlId="Title">
-                                <Form.Label>Title</Form.Label>
-                                <Form.Control type="text" name="Title"
-                                    defaultValue={this.props.Title}
-                                    placeholder="Title" />
+                            <Form.Group controlId="Description">
+                                <Form.Label>Description</Form.Label>
+                                <Form.Control type="text" name="Description"
+                                    defaultValue={this.props.Description}
+                                    placeholder="Description" />
                             </Form.Group>
 
                             <Form.Group controlId="ReleaseDate">

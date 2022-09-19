@@ -55,7 +55,7 @@ namespace MyFavoriteMovie.WebAPI.Controllers
                         Name = movie.Name,
                         ReleaseDate = movie.ReleaseDate,
                         Duration = movie.Duration,
-                        Title = movie.Title,
+                        Description = movie.Description,
                         Poster = poster,
                         DirectedBy = movie.DirectedBy,
                         Actors = movie.Actors,
@@ -148,7 +148,7 @@ namespace MyFavoriteMovie.WebAPI.Controllers
                     Images = movieDto.Images,
                     Episodes = movieDto.Episodes,
                     Genres = movieDto.Genres,
-                    Title = movieDto.Title,
+                    Description = movieDto.Description,
                     Poster = posterName,
                     DirectedBy = movieDto.DirectedBy
                 };
@@ -195,7 +195,7 @@ namespace MyFavoriteMovie.WebAPI.Controllers
                     Images = movieDto.Images,
                     Episodes = movieDto.Episodes,
                     Genres = movieDto.Genres,
-                    Title = movieDto.Title,
+                    Description = movieDto.Description,
                     Poster = newPoster,
                     DirectedBy = movieDto.DirectedBy
                 };

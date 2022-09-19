@@ -4,7 +4,7 @@ import { Button, ButtonToolbar, Image } from "react-bootstrap";
 import { NavLink, Navigate } from "react-router-dom";
 import { EditMovieModal } from "./EditMovieModal";
 import Moment from 'react-moment';
-import formatDate from '../../Utiles/Parser';
+import '../../../src/Main.css';
 
 const defaultPosterImage = process.env.REACT_APP_Default_Images + "defaultPosterImage.jpg";
 
@@ -71,12 +71,12 @@ export class Movie extends Component {
         }
     }
 
-    // formatDate(string) {
-    //     if (string == null)
-    //         return "-";
-    //     else
-    //         return <Moment format="DD.MM.YYYY">{string}</Moment>
-    // }
+    formatDate(string) {
+        if (string == null)
+            return "-";
+        else
+            return <Moment format="DD.MM.YYYY">{string}</Moment>
+    }
 
     formatTimeSpan(string) {
         if (string == null)
@@ -94,21 +94,36 @@ export class Movie extends Component {
         return (
             <div>
                 {this.renderRedirect()}
-                <h1>
-                    Movie page
-                    <h2>MovieId = {movie.Id}</h2>
-                    <h4>
-                        <Image width={100} height={200}
+                <div className="main_container">
+
+                    <div className="main_inline main_image_container">
+                        <Image
+                            className="main_image"
                             src={posterImage}
                             alt="poster"
                         />
-                        <h5 class="text-success">{movie.Name}</h5>
-                        <h5 class="text-success">{movie.Title}</h5>
-                        {/* <h5 class="text-success">Release Date: {this.formatDate(movie.ReleaseDate)}</h5> */}
-                        <h5 class="text-success">Release Date: {formatDate(movie.ReleaseDate)}</h5>
-                        <h5 class="text-success">Duration: {this.formatTimeSpan(movie.Duration)}</h5>
-                    </h4>
-                </h1>
+                    </div>
+
+                    <div className="main_inline main_delimiter_W100"></div>
+
+                    <div className="main_inline main_info_container">
+                        <div className="main_info_row main_title">{movie.Name}</div>
+
+                        <div className="main_info_row main_info_row_about">About</div>
+
+                        <div className="main_info_row">
+                            <div className="main_inline main_info_row_property_name">Release Date</div>
+                            <div className="main_inline main_info_row_result">{this.formatDate(movie.ReleaseDate)}</div>
+                        </div>
+
+                        <div className="main_info_row">
+                            <div className="main_inline main_info_row_property_name">Duration</div>
+                            <div className="main_inline main_info_row_result">{this.formatTimeSpan(movie.Duration)}</div>
+                        </div>
+
+                        <div className="main_inline main_info_row main_info_row_result main_info_row_description"><p>{movie.Description}</p></div>
+                    </div>
+                </div>
                 <ButtonToolbar>
                     <NavLink to="/Movie/Movies" className="btn btn-primary">Back</NavLink>
                     <Button onClick={() => this.setState({ editMovieShow: true, movie: movie })}
@@ -121,7 +136,7 @@ export class Movie extends Component {
                         onHide={() => this.setState({ editMovieShow: false })}
                         Id={movie.Id}
                         Name={movie.Name}
-                        Title={movie.Title}
+                        Description={movie.Description}
                         ReleaseDate={movie.ReleaseDate}
                         Duration={movie.Duration}
                         Poster={posterImage}>

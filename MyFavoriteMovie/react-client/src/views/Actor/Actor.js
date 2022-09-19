@@ -4,6 +4,7 @@ import { ButtonToolbar, Image, Button } from "react-bootstrap";
 import Moment from "react-moment";
 import { Navigate, NavLink } from "react-router-dom";
 import { EditActorModal } from "./EditActorModal";
+import '../../../src/Main.css';
 
 const defaultAvatarImage = process.env.REACT_APP_Default_Images + "defaultAvatarImage.png";
 
@@ -82,17 +83,35 @@ export class Actor extends Component {
         return (
             <div>
                 {this.renderRedirect()}
-                <h1>Actor Page
-                    <h2>ActorId = {actor.Id}</h2>
-                </h1>
-                <Image src={avatarImage} height={200} width={100}></Image>
-                <h4>
-                    <h5 className="text-success">{actor.Name}</h5>
-                    <h5 className="text-success">{actor.Surname}</h5>
-                    <h5 className="text-success">{actor.Height}</h5>
-                    <h5 className="text-success">Born: {this.handleDateFormat(actor.BirthDate)}</h5>
-                    <h5 className="text-success">Died: {this.handleDateFormat(actor.DeathDate)}</h5>
-                </h4>
+                <div className="main_container">
+                    <div className="main_inline main_image_container">
+                        <Image className="main_image" src={avatarImage}></Image>
+                    </div>
+
+                    <div className="main_inline main_delimiter_W100"></div>
+
+                    <div className="main_inline main_info_container ">
+                        <div className="main_inline main_info_row main_title">{actor.Name} {actor.Surname}</div>
+
+                        <div className="main_info_row main_info_row_about">About</div>
+
+                        <div className="main_info_row">
+                            <div className="main_inline main_info_row_property_name">Height</div>
+                            <div className="main_inline main_info_row_result">{actor.Height}</div>
+                        </div>
+
+                        <div className="main_info_row">
+                            <div className="main_inline main_info_row_property_name">Born</div>
+                            <div className="main_inline main_info_row_result">{this.handleDateFormat(actor.BirthDate)}</div>
+                        </div>
+
+                        <div className="main_info_row">
+                            <div className="main_inline main_info_row_property_name">Died</div>
+                            <div className="main_inline main_info_row_result">{this.handleDateFormat(actor.DeathDate)}</div>
+                        </div>
+                    </div>
+                </div>
+
                 <ButtonToolbar>
                     <NavLink to="/Actor/Actors" className="btn btn-primary">Back</NavLink>
                     <Button onClick={() => { this.setState({ editActorShow: true, actor: actor }) }}
