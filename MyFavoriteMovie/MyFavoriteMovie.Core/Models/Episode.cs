@@ -22,6 +22,7 @@ namespace MyFavoriteMovie.Core.Models
         public TimeSpan? Duration { get; set; }
         public DateTime? RealeseDate { get; set; }
 
+        public int MovieId { get; set; }
         public Movie? Movie { get; set; }
     }
 }

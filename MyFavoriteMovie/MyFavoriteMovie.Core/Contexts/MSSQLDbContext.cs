@@ -54,19 +54,19 @@ namespace MyFavoriteMovie.Core.Contexts
             modelBuilder.Entity<Movie>()
                 .HasMany(m => m.MovieRates)
                 .WithOne(r => r.Movie)
-                .HasForeignKey(r => r.Id);
+                .HasForeignKey(r => r.MovieId);
 
             // Movies - Episode
             modelBuilder.Entity<Movie>()
                 .HasMany(m => m.Episodes)
                 .WithOne(e => e.Movie)
-                .HasForeignKey(e => e.Id);
+                .HasForeignKey(e => e.MovieId);
 
             // Movies - Revie
             modelBuilder.Entity<Movie>()
                 .HasMany(m => m.Reviews)
                 .WithOne(r => r.Movie)
-                .HasForeignKey(r => r.Id);
+                .HasForeignKey(r => r.MovieId);
 
             // Movies - DirectedBy
             modelBuilder.Entity<Movie>()
@@ -78,7 +78,7 @@ namespace MyFavoriteMovie.Core.Contexts
             modelBuilder.Entity<Movie>()
                 .HasMany(m => m.Images)
                 .WithOne(i => i.Movie)
-                .HasForeignKey(i => i.Id);
+                .HasForeignKey(i => i.MovieId);
         }
 
         private void ConfigureUserRelationship(ModelBuilder modelBuilder)
@@ -99,13 +99,13 @@ namespace MyFavoriteMovie.Core.Contexts
             modelBuilder.Entity<Account>()
                 .HasMany(u => u.Reviews)
                 .WithOne(r => r.Author)
-                .HasForeignKey(r => r.Id);
+                .HasForeignKey(r => r.AuthorId);
 
-            // Accounts - MovieRete
+            // Accounts - MovieRate
             modelBuilder.Entity<Account>()
                 .HasMany(u => u.MovieRates)
                 .WithOne(r => r.Account)
-                .HasForeignKey(r => r.Id);
+                .HasForeignKey(r => r.AccountId);
         }
 
         private void ConfigureActorRelationship(ModelBuilder modelBuilder)
@@ -116,11 +116,11 @@ namespace MyFavoriteMovie.Core.Contexts
                 .WithMany(aw => aw.ActorHolder)
                 .UsingEntity(t => t.ToTable("ActorHolderAwards"));
 
-            // Actors -Images
+            // Actors - Images
             modelBuilder.Entity<Actor>()
                 .HasMany(ac => ac.Images)
                 .WithOne(i => i.Actor)
-                .HasForeignKey(i => i.Id);
+                .HasForeignKey(i => i.ActorId);
         }
     }
 }

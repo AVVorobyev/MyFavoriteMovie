@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MyFavoriteMovie.Core.Contexts;
 
@@ -11,9 +12,10 @@ using MyFavoriteMovie.Core.Contexts;
 namespace MyFavoriteMovie.Core.Migrations
 {
     [DbContext(typeof(MSSQLDbContext))]
-    partial class MSSQLDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220919151628_add_MovieId_prop_in_Episode")]
+    partial class add_MovieId_prop_in_Episode
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -202,12 +204,6 @@ namespace MyFavoriteMovie.Core.Migrations
             modelBuilder.Entity("MyFavoriteMovie.Core.Models.ActorImage", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<int>("ActorId")
                         .HasColumnType("int");
 
                     b.Property<string>("Image")
@@ -215,18 +211,16 @@ namespace MyFavoriteMovie.Core.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ActorId");
-
                     b.ToTable("ActorImage");
                 });
 
             modelBuilder.Entity("MyFavoriteMovie.Core.Models.Episode", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("EpisodeId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("EpisodeId"), 1L, 1);
 
                     b.Property<TimeSpan?>("Duration")
                         .HasColumnType("time");
@@ -245,7 +239,7 @@ namespace MyFavoriteMovie.Core.Migrations
                     b.Property<int>("Season")
                         .HasColumnType("int");
 
-                    b.HasKey("Id");
+                    b.HasKey("EpisodeId");
 
                     b.HasIndex("MovieId");
 
@@ -328,20 +322,12 @@ namespace MyFavoriteMovie.Core.Migrations
             modelBuilder.Entity("MyFavoriteMovie.Core.Models.MovieImage", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<string>("Image")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("MovieId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("MovieId");
 
                     b.ToTable("MovieImage");
                 });
@@ -349,15 +335,6 @@ namespace MyFavoriteMovie.Core.Migrations
             modelBuilder.Entity("MyFavoriteMovie.Core.Models.MovieRate", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<int>("AccountId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("MovieId")
                         .HasColumnType("int");
 
                     b.Property<byte>("Rate")
@@ -366,25 +343,12 @@ namespace MyFavoriteMovie.Core.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AccountId");
-
-                    b.HasIndex("MovieId");
-
                     b.ToTable("MovieRates");
                 });
 
             modelBuilder.Entity("MyFavoriteMovie.Core.Models.Review", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<int>("AuthorId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("MovieId")
                         .HasColumnType("int");
 
                     b.Property<int>("ReviewType")
@@ -401,10 +365,6 @@ namespace MyFavoriteMovie.Core.Migrations
                         .HasColumnType("nvarchar(200)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("AuthorId");
-
-                    b.HasIndex("MovieId");
 
                     b.ToTable("Reviews");
                 });
@@ -518,7 +478,7 @@ namespace MyFavoriteMovie.Core.Migrations
                 {
                     b.HasOne("MyFavoriteMovie.Core.Models.Actor", "Actor")
                         .WithMany("Images")
-                        .HasForeignKey("ActorId")
+                        .HasForeignKey("Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -540,7 +500,7 @@ namespace MyFavoriteMovie.Core.Migrations
                 {
                     b.HasOne("MyFavoriteMovie.Core.Models.Movie", "Movie")
                         .WithMany("Images")
-                        .HasForeignKey("MovieId")
+                        .HasForeignKey("Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -551,13 +511,13 @@ namespace MyFavoriteMovie.Core.Migrations
                 {
                     b.HasOne("MyFavoriteMovie.Core.Models.Account", "Account")
                         .WithMany("MovieRates")
-                        .HasForeignKey("AccountId")
+                        .HasForeignKey("Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("MyFavoriteMovie.Core.Models.Movie", "Movie")
                         .WithMany("MovieRates")
-                        .HasForeignKey("MovieId")
+                        .HasForeignKey("Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -570,13 +530,13 @@ namespace MyFavoriteMovie.Core.Migrations
                 {
                     b.HasOne("MyFavoriteMovie.Core.Models.Account", "Author")
                         .WithMany("Reviews")
-                        .HasForeignKey("AuthorId")
+                        .HasForeignKey("Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("MyFavoriteMovie.Core.Models.Movie", "Movie")
                         .WithMany("Reviews")
-                        .HasForeignKey("MovieId")
+                        .HasForeignKey("Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

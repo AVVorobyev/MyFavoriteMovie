@@ -17,7 +17,9 @@ namespace MyFavoriteMovie.Core.Models
         [MaxLength(10)]
         public byte Rate { get; set; }
 
+        public int MovieId { get; set; }
         public Movie? Movie { get; set; }
+        public int AccountId { get; set; }
         public Account? Account { get; set; }
     }
 }

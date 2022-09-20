@@ -23,7 +23,11 @@ namespace MyFavoriteMovie.Core.Models
         [MinLength(20)]
         [MaxLength(3000)]
         public string? Text { get; set; }
+
+        public int MovieId { get; set; }
         public Movie? Movie { get; set; }
+
+        public int AuthorId { get; set; }
         public Account? Author { get; set; }
     }
 
