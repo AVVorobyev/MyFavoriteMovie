@@ -31,6 +31,7 @@ builder.Services.AddDbContext<MSSQLDbContext>(options =>
 
 builder.Services.AddScoped<IMovieRepository, MovieRepository>();
 builder.Services.AddScoped<IActorRepository, ActorRepository>();
+builder.Services.AddScoped<IEpisodeRepository, EpisodeRepository>();
 
 var app = builder.Build();
 

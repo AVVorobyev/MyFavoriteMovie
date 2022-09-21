@@ -12,7 +12,7 @@ namespace MyFavoriteMovie.Core.Repositories
 {
     public class Repository<T> : IRepository<T> where T : class
     {
-        private readonly MSSQLDbContext _context;
+        internal readonly MSSQLDbContext _context;
         private DomainResult? _domainResult;
         internal DbSet<T> _dbSet;
 
