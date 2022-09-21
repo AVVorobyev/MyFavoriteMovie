@@ -84,7 +84,7 @@ namespace MyFavoriteMovie.WebAPI.Controllers
             {
                 var result = await _movieRepository.GetAsync(skip, take,
                     includeProperties: $"{nameof(Movie.Actors)}," +
-                    $"{nameof(Movie.Genres)},{nameof(Movie.MovieRates)}");
+                    $"{nameof(Movie.Genres)},{nameof(Movie.MovieRates)},{nameof(Movie.Episodes)}");
 
                 if (result.Success)
                 {
@@ -105,7 +105,8 @@ namespace MyFavoriteMovie.WebAPI.Controllers
                             Poster = movie.Poster,
                             Actors = movie.Actors,
                             Genres = movie.Genres,
-                            AverageRate = averageRate
+                            AverageRate = averageRate,
+                            Episodes = movie.Episodes,
                         });
                     }
                         return Ok(movieListDto);

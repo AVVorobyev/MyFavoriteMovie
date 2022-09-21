@@ -11,6 +11,7 @@ namespace MyFavoriteMovie.WebAPI.Dto.Movie
         public string? Poster { get; set; }
         public List<Core.Models.Actor>? Actors { get; set; } = new();
         public List<Genre>? Genres { get; set; } = new();
+        public List<Core.Models.Episode>? Episodes { get; set; } = new();
         public double AverageRate { get; set; }
     }
 }
