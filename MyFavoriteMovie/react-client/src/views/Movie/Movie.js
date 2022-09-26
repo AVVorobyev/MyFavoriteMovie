@@ -3,8 +3,9 @@ import React, { Component } from "react";
 import { Button, ButtonToolbar, Image } from "react-bootstrap";
 import { NavLink, Navigate } from "react-router-dom";
 import { EditMovieModal } from "./EditMovieModal";
-import Moment from 'react-moment';
 import '../../../src/Main.css';
+import DateFormater from "../../components/DateFormater";
+import TimeSpanFormater from "../../components/TimeSpanFormater";
 
 const defaultPosterImage = process.env.REACT_APP_Default_Images + "defaultPosterImage.jpg";
 
@@ -71,23 +72,6 @@ export class Movie extends Component {
         }
     }
 
-    formatDate(string) {
-        if (string == null)
-            return "-";
-        else
-            return <Moment format="DD.MM.YYYY">{string}</Moment>
-    }
-
-    formatTimeSpan(string) {
-        if (string == null)
-            return "-";
-        else {
-            let moment = require('moment');
-            let m = moment.duration(string).asMinutes();
-            return m + " min.";
-        }
-    }
-
     render() {
         const { movie, posterImage } = this.state;
 
@@ -113,12 +97,12 @@ export class Movie extends Component {
 
                         <div className="main_info_row">
                             <div className="main_inline main_info_row_property_name">Release Date</div>
-                            <div className="main_inline main_info_row_result">{this.formatDate(movie.ReleaseDate)}</div>
+                            <div className="main_inline main_info_row_result"><DateFormater data={movie.ReleaseDate}></DateFormater></div>
                         </div>
 
                         <div className="main_info_row">
                             <div className="main_inline main_info_row_property_name">Duration</div>
-                            <div className="main_inline main_info_row_result">{this.formatTimeSpan(movie.Duration)}</div>
+                            <div className="main_inline main_info_row_result"><TimeSpanFormater span={movie.Duration}></TimeSpanFormater></div>
                         </div>
 
                         <div className="main_inline main_info_row main_info_row_result main_info_row_description"><p>{movie.Description}</p></div>

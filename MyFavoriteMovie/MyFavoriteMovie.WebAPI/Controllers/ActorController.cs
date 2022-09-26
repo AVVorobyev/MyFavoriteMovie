@@ -76,25 +76,30 @@ namespace MyFavoriteMovie.WebAPI.Controllers
         {
             try
             {
-                var result = await _actorRepository.GetAsync(skip, take);
+                var actorsResult = await _actorRepository.GetAsync(skip, take);
+                var countResult = await _actorRepository.GetCountAsync();
 
                 List<ActorDtoGet> actorListDto = new();
 
-                if (result.Success)
+                if (actorsResult.Success && countResult.Success)
                 {
-                    foreach (var actor in result.Result!)
+                    foreach (var actor in actorsResult.Result!)
                     {
                         actorListDto.Add(new ActorDtoGet()
                         {
                             Id = actor.Id,
                             Name = actor.Name,
                             Surname = actor.Surname,
+                            Height = actor.Height,
                             BirthDate = actor.BirthDate,
                             AvatarImage = actor.AvatarImage,
+                            DeathDate = actor.DeathDate                            
                         });
                     }
 
-                    return Ok(actorListDto);
+                    var count = countResult.Result;
+
+                    return Ok(new { Actors = actorListDto, Count = count } );
                 }
             }
             catch (Exception)

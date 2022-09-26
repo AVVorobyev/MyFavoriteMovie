@@ -145,5 +145,21 @@ namespace MyFavoriteMovie.Core.Repositories
 
             return _domainResult;
         }
+
+        public async Task<DomainResult<int>> GetCountAsync()
+        {
+            try
+            {
+                var result = await _dbSet.CountAsync();
+                _domainResult = DomainResult<int>.Succeeded(result);
+            }
+            catch (Exception e)
+            {
+                _domainResult = DomainResult<int>.Failed(e.Message +
+                    $"{Environment.NewLine}" + e.InnerException);
+            }
+
+            return (DomainResult<int>)_domainResult;
+        }
     }
 }

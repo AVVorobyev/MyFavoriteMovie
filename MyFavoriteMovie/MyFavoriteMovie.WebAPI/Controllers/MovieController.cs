@@ -82,13 +82,15 @@ namespace MyFavoriteMovie.WebAPI.Controllers
         {           
             try
             {
-                var result = await _movieRepository.GetAsync(skip, take,
+                var moviesRresult = await _movieRepository.GetAsync(skip, take,
                     includeProperties: $"{nameof(Movie.Actors)}," +
                     $"{nameof(Movie.Genres)},{nameof(Movie.MovieRates)},{nameof(Movie.Episodes)}");
 
-                if (result.Success)
+                var countResult = await _movieRepository.GetCountAsync();
+
+                if (moviesRresult.Success && countResult.Success)
                 {
-                    var movies = result.Result!;
+                    var movies = moviesRresult.Result!;
                     double averageRate;
                     List<MovieDto_MoviesAction> movieListDto = new();
 
@@ -109,7 +111,10 @@ namespace MyFavoriteMovie.WebAPI.Controllers
                             Episodes = movie.Episodes,
                         });
                     }
-                        return Ok(movieListDto);
+
+                    var count = countResult.Result;
+
+                    return Ok(new { Movies = movieListDto, Count = count});
                 }
             }
             catch (Exception)

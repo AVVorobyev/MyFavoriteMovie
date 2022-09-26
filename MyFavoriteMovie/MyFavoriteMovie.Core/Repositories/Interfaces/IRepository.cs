@@ -15,5 +15,6 @@ namespace MyFavoriteMovie.Core.Repositories
         public Task<DomainResult> AddAsync(T entity);
         public Task<DomainResult> UpdateAsync(T entity);
         public Task<DomainResult> DeleteAsync(T entity);
+        public Task<DomainResult<int>> GetCountAsync();
     }
 }

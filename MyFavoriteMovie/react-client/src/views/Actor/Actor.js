@@ -1,10 +1,10 @@
 import axios from "axios";
 import React, { Component } from "react";
 import { ButtonToolbar, Image, Button } from "react-bootstrap";
-import Moment from "react-moment";
 import { Navigate, NavLink } from "react-router-dom";
 import { EditActorModal } from "./EditActorModal";
 import '../../../src/Main.css';
+import DateFormater from '../../components/DateFormater.js';
 
 const defaultAvatarImage = process.env.REACT_APP_Default_Images + "defaultAvatarImage.png";
 
@@ -70,13 +70,6 @@ export class Actor extends Component {
         }
     }
 
-    handleDateFormat(str) {
-        if (str == null)
-            return "-";
-        else
-            return <Moment format="DD.MM.YYYY">{str}</Moment>
-    }
-
     render() {
         const { actor, avatarImage } = this.state;
 
@@ -102,12 +95,12 @@ export class Actor extends Component {
 
                         <div className="main_info_row">
                             <div className="main_inline main_info_row_property_name">Born</div>
-                            <div className="main_inline main_info_row_result">{this.handleDateFormat(actor.BirthDate)}</div>
+                            <div className="main_inline main_info_row_result"><DateFormater date={actor.BirthDate}></DateFormater></div>
                         </div>
 
                         <div className="main_info_row">
                             <div className="main_inline main_info_row_property_name">Died</div>
-                            <div className="main_inline main_info_row_result">{this.handleDateFormat(actor.DeathDate)}</div>
+                            <div className="main_inline main_info_row_result"><DateFormater date={actor.DeathDate}></DateFormater></div>
                         </div>
                     </div>
                 </div>

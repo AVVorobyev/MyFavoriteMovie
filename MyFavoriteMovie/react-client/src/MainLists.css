@@ -1,0 +1,30 @@
+.main_lists_navlink_btn {
+    border-color: rgb(255, 255, 255);
+    background-color: rgb(29, 29, 29);
+    padding: 15px;
+    min-height: 80px;
+    border-radius: 5px;
+    width: 1280px;
+}
+
+
+.main_lists_container {
+    min-width: 1280px;
+    display: inline-block;
+}
+
+.main_lists_title {
+    color: rgb(212, 212, 212);
+    text-align: left;
+    font-size: 150%;
+}
+
+.main_lists_info {
+    color: rgb(182, 180, 180);
+    text-align: left;
+    display: block;
+}
+
+.delimiter_H10 {
+    height: 10px;
+}
