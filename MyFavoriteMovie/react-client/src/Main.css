@@ -8,9 +8,8 @@
 }
 
 .main_info_row {
-    min-width: 600px;
+    min-width: 400px;
     color: rgb(230, 230, 230);
-    margin: 5px;
 }
 
 .main_info_row_property_name {
@@ -22,7 +21,7 @@
 }
 
 .main_info_row_result {
-    min-width: 400px;
+    min-width: 200px;
 }
 
 .main_info_row_description {
@@ -31,9 +30,9 @@
 }
 
 .main_info_row.main_title {
-    font-size: 350%;
+    font-size: 300%;
     word-break: break-all;
-    width: 800px;
+    width: 600px;
 }
 
 .main_info_row.main_about {
@@ -57,7 +56,7 @@
 
 .main_inline.main_info_container {
     text-align: start;
-    min-width: 800px;
+    min-width: 600px;
 }
 
 .main_inline.main_delimiter_W100 {
@@ -66,4 +65,8 @@
 
 .main_inline.delimiter_W5 {
     width: 5px;
+}
+
+.main_container_list{
+    width: 200px;
 }

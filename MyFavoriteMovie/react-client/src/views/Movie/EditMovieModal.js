@@ -12,12 +12,12 @@ export class EditMovieModal extends Component {
         this.state = { newPoster: defaultPosterImage };
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleFileSelected = this.handleFileSelected.bind(this);
-        
+
     }
 
     handleSubmit(e) {
         e.preventDefault();
-        
+
         const formData = new FormData();
         formData.append("Id", e.target.Id.value);
         formData.append("Name", e.target.Name.value);
@@ -56,7 +56,7 @@ export class EditMovieModal extends Component {
     render() {
         let { newPoster } = this.state;
         duration = this.props.Duration;
-                
+
         return (
             <div className='conteiner'>
                 <Modal
@@ -105,7 +105,7 @@ export class EditMovieModal extends Component {
                                     }}
                                     clearIcon={null}
                                     format="HH:mm" hourPlaceholder="hh"
-                                    minutePlaceholder="mm" disableClock="true" name="Duration" placeholder="Duration"></TimePicker>
+                                    minutePlaceholder="mm" disableClock={true} name="Duration" placeholder="Duration"></TimePicker>
                             </Form.Group>
 
                             <Form.Label>Old Poster</Form.Label>

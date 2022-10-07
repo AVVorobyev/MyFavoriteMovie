@@ -5,6 +5,7 @@ using MyFavoriteMovie.WebAPI.Dto.Movie;
 using MyFavoriteMovie.WebAPI.Utiles;
 using System.Diagnostics;
 using System.IO;
+using System.Linq.Expressions;
 using System.Text;
 using System.Text.Json;
 
@@ -13,22 +14,25 @@ namespace MyFavoriteMovie.WebAPI.Controllers
     public class MovieController : Controller
     {
         private readonly IMovieRepository _movieRepository;
+        private readonly IActorRepository _actorRepository;
         private readonly IWebHostEnvironment _environment;
 
         public MovieController(IMovieRepository movieRepository,
+            IActorRepository actorRepository,
             IWebHostEnvironment environment)
         {
             _movieRepository = movieRepository;
+            _actorRepository = actorRepository;
             _environment = environment;
         }
 
         [HttpGet]
         [ActionName("Movie")]
-        public async Task<IActionResult> GetByIdAsync(int id)
+        public async Task<IActionResult> GetAsync(int id)
         {
             try
             {
-                var result = await _movieRepository.GetByIdAsync(m => m.Id == id,
+                var result = await _movieRepository.GetAsync(m => m.Id == id,
                     $"{nameof(Movie.DirectedBy)},{nameof(Movie.Actors)},{nameof(Movie.Reviews)}," +
                     $"{nameof(Movie.Awards)},{nameof(Movie.Genres)},{nameof(Movie.MovieRates)}");
 
@@ -78,11 +82,23 @@ namespace MyFavoriteMovie.WebAPI.Controllers
 
         [HttpGet]
         [ActionName("Movies")]
-        public async Task<IActionResult> GetAsync(int skip = 0, int take = 50)
+        public async Task<IActionResult> GetRangeAsync(int skip = 0, int take = 50)
         {           
             try
             {
-                var moviesRresult = await _movieRepository.GetAsync(skip, take,
+                //var m = new Movie();
+
+                //var exp = Func<Movie, bool>.CreateDelegate(m => m.)
+
+                //var prop = Expression.Property(Expression<Func<Movie, bool>>, Type.GetType(nameof(Movie))!, "asd");
+
+                //if (filter != null)
+                //{
+                //    var a = await _movieRepository.GetRangeAsync(m => prop.))                
+                //}
+
+
+                var moviesRresult = await _movieRepository.GetRangeAsync(null, skip, take,
                     includeProperties: $"{nameof(Movie.Actors)}," +
                     $"{nameof(Movie.Genres)},{nameof(Movie.MovieRates)},{nameof(Movie.Episodes)}");
 
@@ -177,66 +193,153 @@ namespace MyFavoriteMovie.WebAPI.Controllers
 
             try
             {
-                var result = await _movieRepository.GetByIdAsync(filter: m => m.Id == movieDto.Id, asNoTracking: true);
+                var movieResult = await _movieRepository.GetAsync(filter: m => m.Id == movieDto.Id, asNoTracking: true);
 
-                if(result == null) return NotFound();
-
-                string? newPoster = null;
-                var path = _environment.WebRootPath + WebConsts.MoviePosterDirectory;
-                var oldPoster = result.Result!.Poster;
-
-                if (oldPoster != null) FileManager.Delete(oldPoster, path);
-
-                if(movieDto.PosterFile != null)
-                    newPoster = await FileManager.SaveAsync(movieDto.PosterFile!, path);
-
-                var movie = new Movie()
+                if(movieResult.Success)
                 {
-                    Id = movieDto.Id,
-                    Name = movieDto.Name,
-                    ReleaseDate = Parser.ParseToDateTime(movieDto.ReleaseDate),
-                    Duration = Parser.ParseToTimeSpan(movieDto.Duration),
-                    Actors = movieDto.Actors,
-                    Awards = movieDto.Awards,
-                    Images = movieDto.Images,
-                    Episodes = movieDto.Episodes,
-                    Genres = movieDto.Genres,
-                    Description = movieDto.Description,
-                    Poster = newPoster,
-                    DirectedBy = movieDto.DirectedBy
-                };
+                    var oldMovie = movieResult.Result;
 
-                await _movieRepository.UpdateAsync(movie);
+                    if (oldMovie != null) return NotFound();
 
-                return Ok();
+                    string? newPoster = null;
+                    var path = _environment.WebRootPath + WebConsts.MoviePosterDirectory;
+                    var oldPoster = oldMovie!.Poster;
+
+                    if (oldPoster != null) FileManager.Delete(oldPoster, path);
+
+                    if(movieDto.PosterFile != null)
+                        newPoster = await FileManager.SaveAsync(movieDto.PosterFile!, path);
+
+                    var movie = new Movie()
+                    {
+                        Id = movieDto.Id,
+                        Name = movieDto.Name,
+                        ReleaseDate = Parser.ParseToDateTime(movieDto.ReleaseDate),
+                        Duration = Parser.ParseToTimeSpan(movieDto.Duration),
+                        Actors = movieDto.Actors,
+                        Awards = movieDto.Awards,
+                        Images = movieDto.Images,
+                        Episodes = movieDto.Episodes,
+                        Genres = movieDto.Genres,
+                        Description = movieDto.Description,
+                        Poster = newPoster,
+                        DirectedBy = movieDto.DirectedBy
+                    };
+
+                    await _movieRepository.UpdateAsync(movie);
+
+                    return Ok();
+                }
             }
             catch (Exception)
             {
                 throw;
             }
+
+            return NotFound();
         }
 
         [HttpDelete]
         [ActionName("Delete")]
-        public async Task<IActionResult> DeleteAsync([FromForm]Movie movie)
+        public async Task<IActionResult> DeleteAsync([FromQuery]int? movieId)
         {
-            if (movie == null) return BadRequest();
+            if (movieId == null) return BadRequest();
 
             try
             {
-                var path = _environment.WebRootPath + WebConsts.MoviePosterDirectory;
+                var movieResult = await _movieRepository.GetAsync(filter: m => m.Id == movieId, asNoTracking: true);
 
-                if (movie.Poster != null)
-                    FileManager.Delete(movie.Poster, path);
+                if (movieResult.Success)
+                {
+                    var movie = movieResult.Result;
 
-                await _movieRepository.DeleteAsync(movie);
+                    if (movie == null)
+                        return NotFound();
 
-                return Ok();
+                    var path = _environment.WebRootPath + WebConsts.MoviePosterDirectory;
+
+                    if (movie!.Poster != null)
+                        FileManager.Delete(movie.Poster, path);
+
+                    await _movieRepository.DeleteAsync(movie);
+
+                    return Ok();
+                }
             }
             catch (Exception)
             {
                 throw;
             }
+
+            return NotFound();
+        }
+
+        [HttpPatch]
+        [ActionName("AddActor")]
+        public async Task<IActionResult> AddActorToMovieAsync(int? movieId, [FromForm]int? actorsId)
+        {
+            if (movieId == null || actorsId == null) return BadRequest();
+
+            try
+            {
+                var movieResult = await _movieRepository.GetAsync(m => m.Id == movieId,
+                    includeProperties: $"{nameof(Movie.Actors)}");
+
+                var actorResult = await _actorRepository.GetAsync(a => a.Id == actorsId);
+
+                if (movieResult.Success && actorResult.Success)
+                {
+                    var movie = movieResult.Result;
+                    var actor = actorResult.Result;
+
+                    if(movie != null && actor != null)
+                        movie!.Actors.Add(actor);
+
+                    await _movieRepository.UpdateAsync(movie!);
+
+                    return Ok();
+                }
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
+            return NotFound();
+        }
+
+        [HttpPatch]
+        [ActionName("DeleteActor")]
+        public async Task<IActionResult> DeleteActorFromMovieAsync(int? movieId, [FromForm] int? actorsId)
+        {
+            if (movieId == null || actorsId == null) return BadRequest();
+
+            try
+            {
+                var movieResult = await _movieRepository.GetAsync(m => m.Id == movieId,
+                    includeProperties: $"{nameof(Movie.Actors)}");
+
+                var actorResult = await _actorRepository.GetAsync(a => a.Id == actorsId);
+
+                if (movieResult.Success && actorResult.Success)
+                {
+                    var movie = movieResult.Result;
+                    var actor = actorResult.Result;
+
+                    if (movie != null && actor != null)
+                        movie!.Actors.Remove(actor);
+
+                    await _movieRepository.UpdateAsync(movie!);
+
+                    return Ok();
+                }
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
+            return NotFound();
         }
 
         [NonAction]

@@ -7,7 +7,6 @@
     width: 1280px;
 }
 
-
 .main_lists_container {
     min-width: 1280px;
     display: inline-block;
@@ -27,4 +26,21 @@
 
 .delimiter_H10 {
     height: 10px;
+}
+
+.main_inline {
+    display: inline-block;
+}
+
+.main_further_info_row_result_W200 {
+    word-break: break-all;
+    width: 200px;
+}
+
+.main_navlink {
+    color: rgb(212, 212, 212);
+}
+
+.main_align_end{
+    text-align: end;
 }

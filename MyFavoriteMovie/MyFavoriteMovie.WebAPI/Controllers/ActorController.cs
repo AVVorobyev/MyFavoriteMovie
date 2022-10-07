@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using MyFavoriteMovie.Core;
 using MyFavoriteMovie.Core.Models;
 using MyFavoriteMovie.Core.Repositories.Interfaces;
+using MyFavoriteMovie.WebAPI.Dto;
 using MyFavoriteMovie.WebAPI.Dto.Actor;
 using MyFavoriteMovie.WebAPI.Utiles;
 
@@ -19,13 +21,13 @@ namespace MyFavoriteMovie.WebAPI.Controllers
 
         [HttpGet]
         [ActionName("Actor")]
-        public async Task<IActionResult> GetByIdAsync(int? id)
+        public async Task<IActionResult> GetAsync(int? id)
         {
             if (id == null) return BadRequest();
 
             try
             {
-                var result = await _actorRepository.GetByIdAsync(m => m.Id == id,
+                var result = await _actorRepository.GetAsync(m => m.Id == id,
                     $"{nameof(Actor.Images)},{nameof(Actor.ActorsInMovie)}," +
                     $"{nameof(Actor.DirectorsInMovie)},{nameof(Actor.Awards)}");
 
@@ -72,20 +74,21 @@ namespace MyFavoriteMovie.WebAPI.Controllers
 
         [HttpGet]
         [ActionName("Actors")]
-        public async Task<IActionResult> GetAsync(int skip = 0, int take = 50)
-        {
+        public async Task<IActionResult> GetRangeAsync(int skip = 0, int take = 50)
+        {   
             try
             {
-                var actorsResult = await _actorRepository.GetAsync(skip, take);
+                var actorsResult = await _actorRepository.GetRangeAsync(null, skip, take,
+                    $"{nameof(Actor.ActorsInMovie)}");
                 var countResult = await _actorRepository.GetCountAsync();
 
-                List<ActorDtoGet> actorListDto = new();
+                List<ActorDtoGet> actorsDto = new();
 
                 if (actorsResult.Success && countResult.Success)
                 {
                     foreach (var actor in actorsResult.Result!)
                     {
-                        actorListDto.Add(new ActorDtoGet()
+                        actorsDto.Add(new ActorDtoGet()
                         {
                             Id = actor.Id,
                             Name = actor.Name,
@@ -93,13 +96,14 @@ namespace MyFavoriteMovie.WebAPI.Controllers
                             Height = actor.Height,
                             BirthDate = actor.BirthDate,
                             AvatarImage = actor.AvatarImage,
-                            DeathDate = actor.DeathDate                            
+                            DeathDate = actor.DeathDate,
+                            ActorsInMovie = actor.ActorsInMovie
                         });
                     }
 
                     var count = countResult.Result;
 
-                    return Ok(new { Actors = actorListDto, Count = count } );
+                    return Ok(new Dto_ListWithCount<ActorDtoGet>(actorsDto, count));
                 }
             }
             catch (Exception)
@@ -158,7 +162,7 @@ namespace MyFavoriteMovie.WebAPI.Controllers
 
             try
             {
-                var result = await _actorRepository.GetByIdAsync(filter: a => a.Id == actorDto.Id, asNoTracking: true);
+                var result = await _actorRepository.GetAsync(filter: a => a.Id == actorDto.Id, asNoTracking: true);
 
                 if (!result.Success) return NotFound();
 
@@ -217,6 +221,80 @@ namespace MyFavoriteMovie.WebAPI.Controllers
             {
                 throw;
             }
+        }
+
+        [HttpGet]
+        [ActionName("filter_name_surname")]
+        public async Task<IActionResult> GetRangeByNameSurname(string? filter, int skip = 0, int take = 10)
+        {
+            if(filter == null) return Ok(new Dto_ListWithCount<ActorDtoGet>(new List<ActorDtoGet>(), 0));
+
+            try
+            {
+                filter = filter.TrimStart().TrimEnd();
+                                
+                var index = filter.IndexOf(' ');
+
+                DomainResult<IEnumerable<Actor>>? actorResult = null;
+
+                if (index > -1)
+                {
+                    var substring1 = filter.Substring(0, index);
+                    substring1 = substring1.TrimStart().TrimEnd();
+
+                    var substring2 = filter.Remove(0, index);
+                    substring2 = substring2.TrimStart().TrimEnd();
+
+                    actorResult = await _actorRepository.GetRangeAsync(
+                        a => a.Name!.Contains(substring1) || a.Name.Contains(substring2)
+                        || a.Surname!.Contains(substring1) || a.Surname.Contains(substring2),
+                        skip,
+                        take,
+                        $"{nameof(Actor.ActorsInMovie)}");
+                }
+                else
+                {
+                    actorResult = await _actorRepository.GetRangeAsync(
+                        a => a.Name!.Contains(filter!) || a.Surname!.Contains(filter!),
+                        skip,
+                        take,
+                        $"{nameof(Actor.ActorsInMovie)}");
+                }
+
+                var countResult = await _actorRepository.GetCountAsync();
+
+                if (actorResult.Success && countResult.Success)
+                {
+                    var actors = actorResult.Result;
+                    var count = countResult.Result;
+
+                    List<ActorDtoGet> actorsDto = new();
+
+                    foreach (var actor in actors!)
+                    {
+                        actorsDto.Add(new ActorDtoGet()
+                        {
+                            Id = actor.Id,
+                            Name = actor.Name,
+                            Surname = actor.Surname,
+                            Height = actor.Height,
+                            BirthDate = actor.BirthDate,
+                            AvatarImage = actor.AvatarImage,
+                            DeathDate = actor.DeathDate,
+                            ActorsInMovie = actor.ActorsInMovie
+                        });
+                    }
+
+                    return Ok(new Dto_ListWithCount<ActorDtoGet>(actorsDto, count));
+                }
+
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
+            return NotFound();
         }
     }
 }

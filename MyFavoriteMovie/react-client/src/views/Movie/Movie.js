@@ -6,6 +6,7 @@ import { EditMovieModal } from "./EditMovieModal";
 import '../../../src/Main.css';
 import DateFormater from "../../components/DateFormater";
 import TimeSpanFormater from "../../components/TimeSpanFormater";
+import { EditActorsListModal } from "./EditActorsListModal";
 
 const defaultPosterImage = process.env.REACT_APP_Default_Images + "defaultPosterImage.jpg";
 
@@ -13,7 +14,7 @@ export class Movie extends Component {
 
     constructor(props) {
         super(props);
-        this.state = { movie: [], redirect: false, editMovieShow: false, posterImage: String };
+        this.state = { movie: [], redirect: false, editMovieShow: false, posterImage: String, editActorsListShow: false };
     }
 
     setRedirect() {
@@ -50,19 +51,14 @@ export class Movie extends Component {
     }
 
     deleteMovie(movie) {
-        const formData = new FormData();
-        formData.append("Id", movie.Id);
-
-        if (this.state.posterImage !== defaultPosterImage) {
-            let fileName = this.state.posterImage.split('/').pop();
-            formData.append("Poster", fileName);
-        }
 
         if (window.confirm('Are you sure?')) {
             axios({
                 method: "DELETE",
                 url: process.env.REACT_APP_API_URL_Movie + 'Delete',
-                data: formData
+                params : {
+                    movieId : movie.Id
+                }
             }).then(response => {
                 alert(response.data);
                 this.setRedirect();
@@ -73,11 +69,13 @@ export class Movie extends Component {
     }
 
     render() {
-        const { movie, posterImage } = this.state;
+        let { movie } = this.state;
+        let { posterImage } = this.state;
 
         return (
             <div>
                 {this.renderRedirect()}
+
                 <div className="main_container">
 
                     <div className="main_inline main_image_container">
@@ -97,7 +95,7 @@ export class Movie extends Component {
 
                         <div className="main_info_row">
                             <div className="main_inline main_info_row_property_name">Release Date</div>
-                            <div className="main_inline main_info_row_result"><DateFormater data={movie.ReleaseDate}></DateFormater></div>
+                            <div className="main_inline main_info_row_result"><DateFormater date={movie.ReleaseDate}></DateFormater></div>
                         </div>
 
                         <div className="main_info_row">
@@ -107,9 +105,41 @@ export class Movie extends Component {
 
                         <div className="main_inline main_info_row main_info_row_result main_info_row_description"><p>{movie.Description}</p></div>
                     </div>
-                </div>
+
+                    <div className="main_inline main_container_list">
+                        <div className="main_info_row main_info_row_about">In roles</div>
+
+                        <table>
+                            <tbody>
+                                {movie.Actors?.map(actor =>
+                                    <tr key={actor.Id}>
+                                        <NavLink
+                                            to={"/Actor/Actor/" + actor.Id}
+                                            className="main_navlink">
+                                            <div className="main_inline main_further_info_row_result_W200">
+                                                {actor.Name} {actor.Surname}
+                                            </div>
+                                        </NavLink>
+
+                                    </tr>
+                                )}
+                            </tbody>
+                        </table>
+
+                        <Button
+                            onClick={() => this.setState({ editActorsListShow: true })}
+                        >Edit Actor List</Button>
+
+                        <EditActorsListModal
+                            show={this.state.editActorsListShow}
+                            onHide={() => this.setState({ editActorsListShow: false })}
+                            movieid={movie.Id}
+                        ></EditActorsListModal>
+                    </div>
+                </div >
+
                 <ButtonToolbar>
-                    <NavLink to="/Movie/Movies" className="btn btn-primary">Back</NavLink>
+                    <NavLink to="/Movie/Movies" className="btn btn-primary">To Movies</NavLink>
                     <Button onClick={() => this.setState({ editMovieShow: true, movie: movie })}
                         variant='info'>Edit</Button>
                     <Button
@@ -126,7 +156,7 @@ export class Movie extends Component {
                         Poster={posterImage}>
                     </EditMovieModal>
                 </ButtonToolbar>
-            </div>
+            </div >
         )
     }
 }

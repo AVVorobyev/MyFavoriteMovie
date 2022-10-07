@@ -58,10 +58,14 @@ namespace MyFavoriteMovie.Core.Repositories
             return _domainResult;
         }
 
-        public async Task<DomainResult<IEnumerable<T>>> GetAsync(int skip = 0, int take = 10, string? includeProperties = null)
+        public async Task<DomainResult<IEnumerable<T>>> GetRangeAsync(
+            Expression<Func<T, bool>>? filter,
+            int skip = 0,
+            int take = 10,
+            string? includeProperties = null)
         {
             try
-            {
+            {                
                 IQueryable<T> query = _dbSet;
 
                 if (includeProperties != null)
@@ -73,12 +77,15 @@ namespace MyFavoriteMovie.Core.Repositories
                     }
                 }
 
+                if(filter != null)
+                {
+                    query = query.Where(filter);
+                }
+
                 var result = await query.Skip(skip).Take(take).ToListAsync();
 
-                if (result != null && result.Any())
-                    _domainResult = DomainResult<IEnumerable<T>>.Succeeded(result);
-                else
-                    throw new NotFoundException();
+                _domainResult = DomainResult<IEnumerable<T>>.Succeeded(result);
+                
             }
             catch (Exception e)
             {
@@ -89,7 +96,7 @@ namespace MyFavoriteMovie.Core.Repositories
             return (DomainResult<IEnumerable<T>>)_domainResult;
         }
 
-        public async Task<DomainResult<T>> GetByIdAsync(
+        public async Task<DomainResult<T>> GetAsync(
             Expression<Func<T, bool>> filter,
             string? includeProperties = null,
             bool asNoTracking = false)
@@ -115,10 +122,7 @@ namespace MyFavoriteMovie.Core.Repositories
 
                 var result = await query.FirstOrDefaultAsync();
 
-                if (result != null)
-                    _domainResult = DomainResult<T>.Succeeded(result);
-                else
-                    throw new NotFoundException();
+                _domainResult = DomainResult<T>.Succeeded(result);
             }
             catch (Exception e)
             {

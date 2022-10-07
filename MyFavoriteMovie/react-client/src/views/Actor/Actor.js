@@ -30,7 +30,6 @@ export class Actor extends Component {
             params: {
                 id: this.props.actorId
             }
-
         }).then(response => {
             this.setState({ actor: response.data });
 
@@ -106,7 +105,7 @@ export class Actor extends Component {
                 </div>
 
                 <ButtonToolbar>
-                    <NavLink to="/Actor/Actors" className="btn btn-primary">Back</NavLink>
+                    <NavLink to="/Actor/Actors" className="btn btn-primary">To Actors</NavLink>
                     <Button onClick={() => { this.setState({ editActorShow: true, actor: actor }) }}
                         variant='info'>
                         Edit

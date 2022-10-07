@@ -85,7 +85,7 @@ export class AddMovieModal extends Component {
                                         }}
                                         clearIcon={null}
                                         format="HH:mm" hourPlaceholder="hh"
-                                        minutePlaceholder="mm" disableClock="true" name="Duration" placeholder="Duration"></TimePicker>
+                                        minutePlaceholder="mm" disableClock={true} name="Duration" placeholder="Duration"></TimePicker>
                                 </Form.Group>
 
                                 <Form.Group>

@@ -111,7 +111,7 @@ namespace MyFavoriteMovie.WebAPI.Controllers
 
             try
             {
-                var result = await _episodeRepository.GetByIdAsync(e => e.Id == episodeId, asNoTracking: true);
+                var result = await _episodeRepository.GetAsync(e => e.Id == episodeId, asNoTracking: true);
 
                 if (result.Success)
                 {

@@ -21,7 +21,7 @@ namespace MyFavoriteMovie.WebAPI.Controllers
         public JsonResult Index()
         {
             List<MovieDto> movieDtos = new();
-            var movieResult = _movieRepository.GetAsync().Result;
+            var movieResult = _movieRepository.GetRangeAsync().Result;
 
             _logger.LogInformation("", movieResult.Message ?? "Ok");
 
@@ -40,7 +40,7 @@ namespace MyFavoriteMovie.WebAPI.Controllers
             }
 
             List<ActorDto> actorDtos= new();
-            var actorResult = _actorRepository.GetAsync().Result;
+            var actorResult = _actorRepository.GetRangeAsync().Result;
 
             _logger.LogInformation("", actorResult.Message ?? "Ok");
 

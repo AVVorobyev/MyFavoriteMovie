@@ -26,7 +26,7 @@ export class Actors extends Component {
             }
         }).then(response => {
             this.setState({
-                actors: response.data.Actors,
+                actors: response.data.List,
                 actorsCount: response.data.Count
             });
         }, () => {

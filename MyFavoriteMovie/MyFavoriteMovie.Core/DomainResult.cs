@@ -31,10 +31,10 @@ namespace MyFavoriteMovie.Core
     {
         public T? Result { get; }
 
-        public DomainResult(T result) => Result = result;
+        public DomainResult(T? result) => Result = result;
         private DomainResult(string message) : base(message) { }
 
-        public static DomainResult<T> Succeeded(T result) => new(result);
+        public static DomainResult<T> Succeeded(T? result) => new(result);
         public static new DomainResult<T> Failed(string message) => new(message);
     }
 }
