@@ -25,7 +25,7 @@ export class Movies extends Component {
             }
         }).then(response => {
             this.setState({
-                movies: response.data.Movies,
+                movies: response.data.List,
                 movieCount: response.data.Count
             });
         }, () => {

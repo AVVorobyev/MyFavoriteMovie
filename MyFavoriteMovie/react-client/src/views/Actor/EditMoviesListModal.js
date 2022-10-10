@@ -3,16 +3,16 @@ import React, { Component } from "react";
 import { Modal, Button, Col, Form, ButtonToolbar, Row } from 'react-bootstrap';
 import '../../../src/MainModals.css';
 
-export class EditActorsListModal extends Component {
+export class EditMoviesListModal extends Component {
     constructor(props) {
         super(props);
-        this.state = { actors: [], skip: 0, take: 5, actorsCount: 0, itemsOnPage: 5, filterString: "" }
-        this.addActorsOnPage = this.addActorsOnPage.bind(this);
+        this.state = { movies: [], skip: 0, take: 5, moviesCount: 0, itemsOnPage: 5, filterString: "" }
+        this.addMoviesOnPage = this.addMoviesOnPage.bind(this);
     }
 
-    getActorsList() {
+    getMoviesList() {
         axios({
-            url: process.env.REACT_APP_API_URL_Actor + 'Actors',
+            url: process.env.REACT_APP_API_URL_Movie + 'Movies',
             method: "GET",
             params: {
                 skip: this.state.skip,
@@ -20,16 +20,16 @@ export class EditActorsListModal extends Component {
             }
         }).then(response => {
             this.setState({
-                actors: response.data.List,
-                actorsCount: response.data.Count
+                movies: response.data.List,
+                moviesCount: response.data.Count
             });
         }, () => {
         });
     }
 
-    getFilteredActorsList() {
+    getFilteredMovieList() {
         axios({
-            url: process.env.REACT_APP_API_URL_Actor + 'filter_name_surname',
+            url: process.env.REACT_APP_API_URL_Movie + 'filter_name',
             method: "GET",
             params: {
                 filter: this.state.filterString,
@@ -38,38 +38,38 @@ export class EditActorsListModal extends Component {
             }
         }).then(response => {
             this.setState({
-                actors: response.data.List,
-                actorsCount: response.data.Count
+                movies: response.data.List,
+                moviesCount: response.data.Count
             });
 
         }, () => {
         });
     }
 
-    handleGetActorList() {
+    handleGetMovieList() {
         if (this.state.filterString.length === 0)
-            this.getActorsList();
+            this.getMoviesList();
         else
-            this.getFilteredActorsList();
+            this.getFilteredMovieList();
     }
 
     componentDidMount() {
-        this.handleGetActorList();
+        this.handleGetMovieList();
     }
 
     componentDidUpdate(prevProps, prevState) {
-        if (prevState.actors === this.state.actors)
-            this.handleGetActorList();
+        if (prevState.movies === this.state.movies)
+            this.handleGetMovieList();
     }
 
-    async addActorsOnPage() {
-        if (this.state.take <= this.state.actorsCount) {
+    async addMoviesOnPage() {
+        if (this.state.take <= this.state.moviesCount) {
             await this.setState({ take: this.state.take + this.state.itemsOnPage });
 
             if (this.state.filterString.length === 0)
-                this.getActorsList();
+                this.getMoviesList();
             else
-                this.getFilteredActorsList();
+                this.getFilteredMovieList();
         }
     }
 
@@ -77,11 +77,11 @@ export class EditActorsListModal extends Component {
         window.location.reload();
     }
 
-    editActorsListButton(actorsInMovieList, actorId) {
+    editMoviesListButton(actorsInMovieList, actorId) {
         let flag = false;
 
         for (let index = 0; index < actorsInMovieList.length; index++) {
-            if (this.props.movieid === actorsInMovieList[index].Id) {
+            if (this.props.actorid === actorsInMovieList[index].Id) {
                 flag = true;
                 break;
             }
@@ -89,7 +89,7 @@ export class EditActorsListModal extends Component {
 
         if (!flag)
             return <Button
-                onClick={() => { this.handleAddActor(actorId) }}
+                onClick={() => { this.handleAddMovie(actorId) }}
                 className="main_modal_btn_add">
                 Add
             </Button>;
@@ -101,53 +101,52 @@ export class EditActorsListModal extends Component {
             </Button>;
     }
 
-    handleAddActor(actorId) {
+    handleAddMovie(movieId) {
         const formData = new FormData();
-        formData.append("actorId", actorId);
+        formData.append("movieId", movieId);
 
         axios({
             method: 'PATCH',
-            url: process.env.REACT_APP_API_URL_Movie + "AddActor",
+            url: process.env.REACT_APP_API_URL_Actor + "AddMovie",
             params: {
-                movieId: this.props.movieid,
+                actorId: this.props.actorid,
             },
             data: formData
         }).then(() => {
-
             if (this.state.filterString.length > 0)
-                this.getFilteredActorsList();
+                this.getFilteredMovieList();
             else
-                this.getActorsList();
+                this.getMoviesList();
 
         }, (error) => {
             alert("error!");
         });
     }
 
-    handleDeleteActor(actorId) {
+    handleDeleteActor(movieId) {
         const formData = new FormData();
-        formData.append("actorId", actorId);
+        formData.append("movieId", movieId);
 
         axios({
             method: 'PATCH',
-            url: process.env.REACT_APP_API_URL_Movie + "DeleteActor",
+            url: process.env.REACT_APP_API_URL_Actor + "DeleteMovie",
             params: {
-                movieId: this.props.movieid,
+                actorId: this.props.actorid,
             },
             data: formData
         }).then(() => {
             if (this.state.filterString.length > 0)
-                this.getFilteredActorsList();
+                this.getFilteredMovieList();
             else
-                this.getActorsList();
+                this.getMoviesList();
         }, (error) => {
             alert("error!");
         });
     }
 
     render() {
-        let { actors, actorsCount } = this.state;
-        
+        let { movies, moviesCount } = this.state;
+
         return (
             <div>
 
@@ -159,11 +158,11 @@ export class EditActorsListModal extends Component {
                     className="main_modal_container">
                     <Modal.Header>
                         <Modal.Title>
-                            Edit Actors List
+                            Edit Movie List
                         </Modal.Title>
                     </Modal.Header>
                     <Modal.Body>
-                        <Col >
+                        <Col>
                             <Form>
                                 <table>
                                     <tbody>
@@ -171,7 +170,7 @@ export class EditActorsListModal extends Component {
                                             <Form.Control
                                                 onChange={async (e) => {
                                                     await this.setState({ filterString: e.target.value });
-                                                    this.handleGetActorList();
+                                                    this.handleGetMovieList();
                                                 }}
                                                 type="text"
                                                 placeholder="Filter"
@@ -181,14 +180,14 @@ export class EditActorsListModal extends Component {
                                             <div className="delimiter_H10"></div>
 
                                         </Form.Group>
-                                        {actors.map(actor =>
-                                            <tr key={actor.Id}>
+                                        {movies.map(movie =>
+                                            <tr key={movie.Id}>
                                                 <td>
                                                     <Form.Group>
                                                         <Row>
                                                             <ButtonToolbar>
-                                                                <div className="main_modal_info">{actor.Name + " " + actor.Surname}</div>
-                                                                {this.editActorsListButton(actor.ActorsInMovie, actor.Id)}
+                                                                <div className="main_modal_info">{movie.Name}</div>
+                                                                {this.editMoviesListButton(movie.Actors, movie.Id)}
                                                             </ButtonToolbar>
                                                         </Row>
                                                     </Form.Group>
@@ -200,11 +199,11 @@ export class EditActorsListModal extends Component {
 
                                 <div className="delimiter_H10"></div>
 
-                                <div className="main_modal_center"> {actors.length} / {actorsCount}</div>
+                                <div className="main_modal_center"> {movies.length} / {moviesCount}</div>
 
                                 <div className="main_modal_center">
 
-                                    <Button onClick={() => { this.addActorsOnPage() }} className="main_modal_btn_more">
+                                    <Button onClick={() => { this.addMoviesOnPage() }} className="main_modal_btn_more">
                                         More</Button>
                                 </div>
 

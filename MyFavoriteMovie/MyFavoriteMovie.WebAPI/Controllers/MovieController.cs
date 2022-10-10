@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using MyFavoriteMovie.Core;
 using MyFavoriteMovie.Core.Models;
 using MyFavoriteMovie.Core.Repositories.Interfaces;
+using MyFavoriteMovie.WebAPI.Dto;
 using MyFavoriteMovie.WebAPI.Dto.Movie;
 using MyFavoriteMovie.WebAPI.Utiles;
 using System.Diagnostics;
@@ -86,18 +88,6 @@ namespace MyFavoriteMovie.WebAPI.Controllers
         {           
             try
             {
-                //var m = new Movie();
-
-                //var exp = Func<Movie, bool>.CreateDelegate(m => m.)
-
-                //var prop = Expression.Property(Expression<Func<Movie, bool>>, Type.GetType(nameof(Movie))!, "asd");
-
-                //if (filter != null)
-                //{
-                //    var a = await _movieRepository.GetRangeAsync(m => prop.))                
-                //}
-
-
                 var moviesRresult = await _movieRepository.GetRangeAsync(null, skip, take,
                     includeProperties: $"{nameof(Movie.Actors)}," +
                     $"{nameof(Movie.Genres)},{nameof(Movie.MovieRates)},{nameof(Movie.Episodes)}");
@@ -130,7 +120,7 @@ namespace MyFavoriteMovie.WebAPI.Controllers
 
                     var count = countResult.Result;
 
-                    return Ok(new { Movies = movieListDto, Count = count});
+                    return Ok(new Dto_ListWithCount<MovieDto_MoviesAction>(movieListDto, count));
                 }
             }
             catch (Exception)
@@ -276,16 +266,16 @@ namespace MyFavoriteMovie.WebAPI.Controllers
 
         [HttpPatch]
         [ActionName("AddActor")]
-        public async Task<IActionResult> AddActorToMovieAsync(int? movieId, [FromForm]int? actorsId)
+        public async Task<IActionResult> AddActorToMovieAsync(int? movieId, [FromForm]int? actorId)
         {
-            if (movieId == null || actorsId == null) return BadRequest();
+            if (movieId == null || actorId == null) return BadRequest();
 
             try
             {
                 var movieResult = await _movieRepository.GetAsync(m => m.Id == movieId,
                     includeProperties: $"{nameof(Movie.Actors)}");
 
-                var actorResult = await _actorRepository.GetAsync(a => a.Id == actorsId);
+                var actorResult = await _actorRepository.GetAsync(a => a.Id == actorId);
 
                 if (movieResult.Success && actorResult.Success)
                 {
@@ -310,16 +300,16 @@ namespace MyFavoriteMovie.WebAPI.Controllers
 
         [HttpPatch]
         [ActionName("DeleteActor")]
-        public async Task<IActionResult> DeleteActorFromMovieAsync(int? movieId, [FromForm] int? actorsId)
+        public async Task<IActionResult> DeleteActorFromMovieAsync(int? movieId, [FromForm] int? actorId)
         {
-            if (movieId == null || actorsId == null) return BadRequest();
+            if (movieId == null || actorId == null) return BadRequest();
 
             try
             {
                 var movieResult = await _movieRepository.GetAsync(m => m.Id == movieId,
                     includeProperties: $"{nameof(Movie.Actors)}");
 
-                var actorResult = await _actorRepository.GetAsync(a => a.Id == actorsId);
+                var actorResult = await _actorRepository.GetAsync(a => a.Id == actorId);
 
                 if (movieResult.Success && actorResult.Success)
                 {
@@ -333,6 +323,66 @@ namespace MyFavoriteMovie.WebAPI.Controllers
 
                     return Ok();
                 }
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
+            return NotFound();
+        }
+
+
+        [HttpGet]
+        [ActionName("filter_name")]
+        public async Task<IActionResult> GetRangeBy_Name(string? filter, int skip = 0, int take = 10)
+        {
+            if (filter == null) return Ok(new Dto_ListWithCount<MovieDto_MoviesAction>(new List<MovieDto_MoviesAction>(), 0));
+
+            try
+            {
+                filter = filter.TrimStart().TrimEnd();
+
+                DomainResult<IEnumerable<Movie>>? actorResult = null;
+
+                actorResult = await _movieRepository.GetRangeAsync(
+                    a => a.Name!.Contains(filter!),
+                    skip,
+                    take,
+                    $"{nameof(Movie.Actors)}");
+
+                var countResult = await _actorRepository.GetCountAsync();
+
+                if (actorResult.Success && countResult.Success)
+                {
+                    var movies = actorResult.Result;
+                    var count = countResult.Result;
+
+                    List<MovieDto_MoviesAction> moviesDto = new();
+
+                    double averageRate;
+
+                    foreach (var movie in movies!)
+                    {
+                        averageRate = GetAverageRate(movie);
+
+                        moviesDto.Add(new MovieDto_MoviesAction()
+                        {
+                            Id = movie.Id,
+                            Name = movie.Name,
+                            ReleaseDate = movie.ReleaseDate,
+                            Duration = movie.Duration,
+                            Poster = movie.Poster,
+                            Actors = movie.Actors,
+                            Genres = movie.Genres,
+                            AverageRate = averageRate,
+                            Episodes = movie.Episodes
+                        });                        
+                    }
+
+                    return Ok(new Dto_ListWithCount<MovieDto_MoviesAction>(moviesDto, count));
+                }
+
             }
             catch (Exception)
             {

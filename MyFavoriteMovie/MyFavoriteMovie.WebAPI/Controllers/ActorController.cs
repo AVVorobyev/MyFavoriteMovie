@@ -12,11 +12,13 @@ namespace MyFavoriteMovie.WebAPI.Controllers
     {
         private readonly IActorRepository _actorRepository;
         private readonly IWebHostEnvironment _environment;
+        private readonly IMovieRepository _movieRepository;
 
-        public ActorController(IActorRepository actorRepository, IWebHostEnvironment environment)
+        public ActorController(IActorRepository actorRepository, IMovieRepository movieRepository, IWebHostEnvironment environment)
         {
             _actorRepository = actorRepository;
             _environment = environment;
+            _movieRepository = movieRepository;
         }
 
         [HttpGet]
@@ -288,6 +290,74 @@ namespace MyFavoriteMovie.WebAPI.Controllers
                     return Ok(new Dto_ListWithCount<ActorDtoGet>(actorsDto, count));
                 }
 
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
+            return NotFound();
+        }
+
+        [HttpPatch]
+        [ActionName("AddMovie")]
+        public async Task<IActionResult> AddMovieToMovieAsync(int? actorId, [FromForm] int? movieId)
+        {
+            if (movieId == null || actorId == null) return BadRequest();
+
+            try
+            {
+                var actorResult = await _actorRepository.GetAsync(a => a.Id == actorId,
+                    includeProperties: $"{nameof(Actor.ActorsInMovie)}");
+
+                var movieResult = await _movieRepository.GetAsync(m => m.Id == movieId);
+
+                if (actorResult.Success && movieResult.Success)
+                {
+                    var actor = actorResult.Result;
+                    var movie = movieResult.Result;
+
+                    if (actor != null && movie != null)
+                        actor!.ActorsInMovie.Add(movie);
+
+                    await _actorRepository.UpdateAsync(actor!);
+
+                    return Ok();
+                }
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
+            return NotFound();
+        }
+
+        [HttpPatch]
+        [ActionName("DeleteMovie")]
+        public async Task<IActionResult> DeleteMovieFromMovieAsync(int? actorId, [FromForm] int? movieId)
+        {
+            if (actorId == null || movieId == null) return BadRequest();
+
+            try
+            {
+                var actorResult = await _actorRepository.GetAsync(a => a.Id == actorId,
+                    includeProperties: $"{nameof(Actor.ActorsInMovie)}");
+
+                var movieResult = await _movieRepository.GetAsync(m => m.Id == movieId);
+
+                if (actorResult.Success && movieResult.Success)
+                {
+                    var actor = actorResult.Result;
+                    var movie = movieResult.Result;
+
+                    if (movie != null && actor != null)
+                        actor!.ActorsInMovie.Remove(movie);
+
+                    await _actorRepository.UpdateAsync(actor!);
+
+                    return Ok();
+                }
             }
             catch (Exception)
             {

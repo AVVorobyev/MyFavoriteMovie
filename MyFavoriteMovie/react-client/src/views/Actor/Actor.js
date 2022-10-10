@@ -5,13 +5,14 @@ import { Navigate, NavLink } from "react-router-dom";
 import { EditActorModal } from "./EditActorModal";
 import '../../../src/Main.css';
 import DateFormater from '../../components/DateFormater.js';
+import { EditMoviesListModal } from "./EditMoviesListModal";
 
 const defaultAvatarImage = process.env.REACT_APP_Default_Images + "defaultAvatarImage.png";
 
 export class Actor extends Component {
     constructor(props) {
         super(props);
-        this.state = { actor: [], redirect: false, avatarImage: [], editActorShow: false }
+        this.state = { actor: [], redirect: false, avatarImage: [], editActorShow: false, editMoviesListShow: false }
     }
 
     setRedirect() {
@@ -102,7 +103,39 @@ export class Actor extends Component {
                             <div className="main_inline main_info_row_result"><DateFormater date={actor.DeathDate}></DateFormater></div>
                         </div>
                     </div>
+
+                    <div className="main_inline main_container_list">
+                        <div className="main_info_row main_info_row_about">In roles</div>
+
+                        <table>
+                            <tbody>
+                                {actor.ActorsInMovie?.map(movie =>
+                                    <tr key={movie.Id}>
+                                        <NavLink
+                                            to={"/Movie/Movie/" + movie.Id}
+                                            className="main_navlink">
+                                            <div className="main_inline main_further_info_row_result_W200">
+                                                {movie.Name}
+                                            </div>
+                                        </NavLink>
+                                    </tr>
+                                )}
+                            </tbody>
+                        </table>
+
+                        <Button
+                            onClick={() => this.setState({ editMoviesListShow: true })}>
+                            Edit Movies List
+                        </Button>
+                        <EditMoviesListModal
+                            show={this.state.editMoviesListShow}
+                            onHide={() => this.setState({ editMoviesListShow: false })}
+                            actorid={actor.Id}>
+                        </EditMoviesListModal>
+                    </div>
+
                 </div>
+
 
                 <ButtonToolbar>
                     <NavLink to="/Actor/Actors" className="btn btn-primary">To Actors</NavLink>
