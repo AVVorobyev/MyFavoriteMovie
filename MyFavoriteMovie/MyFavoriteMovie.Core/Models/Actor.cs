@@ -31,6 +31,6 @@ namespace MyFavoriteMovie.Core.Models
         public List<Movie> ActorsInMovie { get; set; } = new();
         public List<Movie> DirectorsInMovie { get; set; } = new();
         public List<ActorAward> Awards { get; set; } = new();
-        public List<Account> AccountsFavorite { get; set; } = new();
+        public List<User> UsersFavorite { get; set; } = new();
     }
 }

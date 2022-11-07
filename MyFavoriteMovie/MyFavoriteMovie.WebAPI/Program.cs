@@ -1,9 +1,13 @@
-using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using MyFavoriteMovie.Core.Contexts;
 using MyFavoriteMovie.Core.Repositories;
 using MyFavoriteMovie.Core.Repositories.Interfaces;
-using Microsoft.EntityFrameworkCore;
-using MyFavoriteMovie.Core.Contexts;
+using MyFavoriteMovie.Core.Services;
+using MyFavoriteMovie.Core.Services.Interfaces;
 using Newtonsoft.Json.Serialization;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,7 +21,7 @@ builder.Services.AddCors(cors =>
             builder.Configuration.GetSection(
                 "frontend_url").ToString()!).AllowAnyMethod().AllowAnyHeader()));
 
-//JSON Serializer
+// JSON Serializer
 builder.Services.AddControllersWithViews()
     .AddNewtonsoftJson(options =>
     options.SerializerSettings.ReferenceLoopHandling = Newtonsoft
@@ -29,9 +33,28 @@ builder.Services.AddDbContext<MSSQLDbContext>(options =>
     options.UseSqlServer(
         builder.Configuration.GetConnectionString("test")));
 
+// Auth
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(
+    options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters()
+        {
+            ValidateIssuer = false,
+            ValidateAudience = false,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(builder.Configuration.GetValue<string>("JWTSecretKey")))
+        };
+    });
+
 builder.Services.AddScoped<IMovieRepository, MovieRepository>();
 builder.Services.AddScoped<IActorRepository, ActorRepository>();
 builder.Services.AddScoped<IEpisodeRepository, EpisodeRepository>();
+builder.Services.AddScoped<IAuthRepository, AuthRepository>();
+builder.Services.AddSingleton<IAuthService>(new AuthService(
+    builder.Configuration.GetValue<string>("JWTSecretKey"),
+    builder.Configuration.GetValue<int>("JWTLifespan")));
 
 var app = builder.Build();
 
@@ -46,7 +69,7 @@ app.UseRouting();
 
 app.UseStaticFiles();
 
-app.UseAuthorization();
+app.UseAuthentication();
 
 app.UseEndpoints(endpoints =>
     endpoints.MapControllerRoute(

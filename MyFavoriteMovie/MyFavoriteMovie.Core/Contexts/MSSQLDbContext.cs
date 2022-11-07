@@ -1,10 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MyFavoriteMovie.Core.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MyFavoriteMovie.Core.Contexts
 {
@@ -17,7 +12,7 @@ namespace MyFavoriteMovie.Core.Contexts
         public DbSet<MovieRate> MovieRates { get; set; } = null!;
         public DbSet<ActorAward> ActorAwards { get; set; } = null!;
         public DbSet<MovieAward> MovieAwards { get; set; } = null!;
-        public DbSet<Account> Users { get; set; } = null!;
+        public DbSet<User> Users { get; set; } = null!;
         public DbSet<Genre> Genres { get; set; } = null!;
 
         public MSSQLDbContext() : base() { }
@@ -84,27 +79,27 @@ namespace MyFavoriteMovie.Core.Contexts
         private void ConfigureUserRelationship(ModelBuilder modelBuilder)
         {
             // Accounts - Movies
-            modelBuilder.Entity<Account>()
+            modelBuilder.Entity<User>()
                 .HasMany(u => u.FavoriteMovies)
-                .WithMany(m => m.AccountsFavorite)
+                .WithMany(m => m.UsersFavorite)
                 .UsingEntity(t => t.ToTable("UserFavoriteMovie"));
 
             // Accounts - Actors
-            modelBuilder.Entity<Account>()
+            modelBuilder.Entity<User>()
                 .HasMany(u => u.FavoriteActors)
-                .WithMany(a => a.AccountsFavorite)
+                .WithMany(a => a.UsersFavorite)
                 .UsingEntity(t => t.ToTable("UserFavoriteActor"));
 
             // Accounts - Rewiew
-            modelBuilder.Entity<Account>()
+            modelBuilder.Entity<User>()
                 .HasMany(u => u.Reviews)
-                .WithOne(r => r.Author)
+                .WithOne(r => r.User)
                 .HasForeignKey(r => r.AuthorId);
 
             // Accounts - MovieRate
-            modelBuilder.Entity<Account>()
+            modelBuilder.Entity<User>()
                 .HasMany(u => u.MovieRates)
-                .WithOne(r => r.Account)
+                .WithOne(r => r.User)
                 .HasForeignKey(r => r.AccountId);
         }
 

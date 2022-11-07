@@ -19,6 +19,6 @@ namespace MyFavoriteMovie.WebAPI.Dto.Movie
         public List<Genre> Genres { get; set; } = new();
         public List<Core.Models.Episode> Episodes { get; set; } = new();
         public List<MovieRate> MovieRates { get; set; } = new();
-        public List<Account> AccountsFavorite { get; set; } = new();
+        public List<Core.Models.User> AccountsFavorite { get; set; } = new();
     }
 }

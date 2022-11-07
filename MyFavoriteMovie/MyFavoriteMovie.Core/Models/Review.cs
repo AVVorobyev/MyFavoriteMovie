@@ -28,7 +28,7 @@ namespace MyFavoriteMovie.Core.Models
         public Movie? Movie { get; set; }
 
         public int AuthorId { get; set; }
-        public Account? Author { get; set; }
+        public User? User { get; set; }
     }
 
     public enum ReviewType

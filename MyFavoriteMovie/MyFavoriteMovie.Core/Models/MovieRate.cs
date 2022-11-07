@@ -20,6 +20,6 @@ namespace MyFavoriteMovie.Core.Models
         public int MovieId { get; set; }
         public Movie? Movie { get; set; }
         public int AccountId { get; set; }
-        public Account? Account { get; set; }
+        public User? User { get; set; }
     }
 }

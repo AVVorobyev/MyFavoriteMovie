@@ -33,6 +33,6 @@ namespace MyFavoriteMovie.Core.Models
         public List<Genre> Genres { get; set; } = new();
         public List<Episode> Episodes { get; set; } = new();
         public List<MovieRate> MovieRates { get; set; } = new();
-        public List<Account> AccountsFavorite { get; set; } = new();
+        public List<User> UsersFavorite { get; set; } = new();
     }
 }
