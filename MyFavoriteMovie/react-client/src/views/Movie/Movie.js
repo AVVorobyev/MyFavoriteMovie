@@ -3,7 +3,7 @@ import React, { Component } from "react";
 import { Button, ButtonToolbar, Image } from "react-bootstrap";
 import { NavLink, Navigate } from "react-router-dom";
 import { EditMovieModal } from "./EditMovieModal";
-import '../../../src/Main.css';
+import '../../../src/styles/Main.css';
 import DateFormater from "../../components/DateFormater";
 import TimeSpanFormater from "../../components/TimeSpanFormater";
 import { EditActorsListModal } from "./EditActorsListModal";

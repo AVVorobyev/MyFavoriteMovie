@@ -1,0 +1,8 @@
+.header_container{
+    text-align: center;
+    height: 100px;
+    width: 1280px;
+    background-color: black;
+    margin-bottom: 20px;
+    display: inline-block;
+}

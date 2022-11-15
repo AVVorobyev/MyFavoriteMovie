@@ -1,0 +1,32 @@
+.form{
+    width: 600px;
+    display: block;
+    align-content: center;
+    align-self: center;
+    display: inline-block;
+    /* text-align: start; */
+}
+
+.form_container{
+    text-align: center;
+    align-items: center;
+    display: inline-block;
+    width: 1280px;
+}
+
+.form_validation_result{
+    text-align: start;
+    word-break: break-all;
+    white-space: pre-line;
+    color: rgb(210, 0, 0);
+}
+
+.form_text_start{
+    text-align: start;
+}
+
+.form_onchange{
+    color: rgb(210, 0, 0);
+    border-color: rgb(210, 0, 0);
+}
+

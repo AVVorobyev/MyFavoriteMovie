@@ -3,7 +3,7 @@ import React, { Component } from "react";
 import { Button, ButtonToolbar } from "react-bootstrap";
 import { NavLink } from "react-router-dom";
 import { AddActorModal } from "./AddActorModal";
-import '../../../src/MainLists.css';
+import '../../../src/styles/MainLists.css';
 import DateFormater from '../../components/DateFormater.js';
 
 export class Actors extends Component {

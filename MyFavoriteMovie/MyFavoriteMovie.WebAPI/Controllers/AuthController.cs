@@ -102,5 +102,43 @@ namespace MyFavoriteMovie.WebAPI.Controllers
                 return BadRequest(e.Message + Environment.NewLine + e.InnerException);
             }
         }
+
+        [HttpGet]
+        [ActionName("Nickname")]
+        public IActionResult IsNicknameUnique(string nickname)
+        {
+            try
+            {
+                var result = _authRepository.IsNicknameUnique(nickname);
+
+                if (result.Success)
+                    return Ok(result.Result);
+
+                return BadRequest(result.Message);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message + Environment.NewLine + e.InnerException);
+            }
+        }
+
+        [HttpGet]
+        [ActionName("Email")]
+        public IActionResult IsEmailUnique(string email)
+        {
+            try
+            {
+                var result = _authRepository.IsEmailUnique(email);
+
+                if (result.Success)
+                    return Ok(result.Result);
+
+                return BadRequest(result.Message);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message + Environment.NewLine + e.InnerException);
+            }
+        }
     }
 }

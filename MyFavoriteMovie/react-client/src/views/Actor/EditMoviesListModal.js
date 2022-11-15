@@ -1,7 +1,7 @@
 import axios from "axios";
 import React, { Component } from "react";
 import { Modal, Button, Col, Form, ButtonToolbar, Row } from 'react-bootstrap';
-import '../../../src/MainModals.css';
+import '../../../src/styles/MainModals.css';
 
 export class EditMoviesListModal extends Component {
     constructor(props) {
