@@ -6,6 +6,7 @@ using MyFavoriteMovie.Core.Repositories;
 using MyFavoriteMovie.Core.Repositories.Interfaces;
 using MyFavoriteMovie.Core.Services;
 using MyFavoriteMovie.Core.Services.Interfaces;
+using MyFavoriteMovie.WebAPI.Middlewares;
 using Newtonsoft.Json.Serialization;
 using System.Text;
 
@@ -17,9 +18,13 @@ builder.Services.AddControllers();
 
 builder.Services.AddCors(cors =>
     cors.AddDefaultPolicy(options =>
-        options.WithOrigins(
-            builder.Configuration.GetSection(
-                "frontend_url").ToString()!).AllowAnyMethod().AllowAnyHeader()));
+        options
+        .WithOrigins(
+            builder.Configuration.GetValue<string>(
+                "frontend_url"))
+        .AllowAnyMethod()
+        .AllowAnyHeader()
+        .AllowCredentials()));
 
 // JSON Serializer
 builder.Services.AddControllersWithViews()
@@ -48,28 +53,49 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
         };
     });
 
+builder.Services.AddAntiforgery(
+    options =>
+    {
+        options.Cookie = new CookieBuilder()
+        {
+            Name = "x-xsrf-token",
+            HttpOnly = true,
+            SameSite = SameSiteMode.None
+        };
+    }
+);
+
+builder.Services.AddAuthorization();
 builder.Services.AddScoped<IMovieRepository, MovieRepository>();
 builder.Services.AddScoped<IActorRepository, ActorRepository>();
 builder.Services.AddScoped<IEpisodeRepository, EpisodeRepository>();
 builder.Services.AddScoped<IAuthRepository, AuthRepository>();
-builder.Services.AddSingleton<IAuthService>(new AuthService(
-    builder.Configuration.GetValue<string>("JWTSecretKey"),
-    builder.Configuration.GetValue<int>("JWTLifespan")));
+builder.Services.AddSingleton<IAuthService>(
+    new AuthService(
+        builder.Configuration.GetValue<string>("JWTSecretKey"),
+        builder.Configuration.GetValue<int>("JWTLifespan")));
 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-app.UseCors(options => options.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
 
 app.UseHttpsRedirection();
 
-app.MapControllers();
+app.UseStaticFiles();
 
 app.UseRouting();
 
-app.UseStaticFiles();
+app.UseCors();
+
+app.UseMiddleware<TokenMiddleware>();
+
+app.UseMiddleware<XsrfProtectionMiddleware>();
 
 app.UseAuthentication();
+
+app.UseAuthorization();
+
+app.MapControllers();
 
 app.UseEndpoints(endpoints =>
     endpoints.MapControllerRoute(

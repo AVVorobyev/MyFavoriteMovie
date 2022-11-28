@@ -3,6 +3,7 @@ using MyFavoriteMovie.Core.Models;
 using MyFavoriteMovie.Core.Repositories.Interfaces;
 using MyFavoriteMovie.Core.Services.Auth;
 using MyFavoriteMovie.Core.Services.Interfaces;
+using MyFavoriteMovie.WebAPI.Dto.Auth;
 using MyFavoriteMovie.WebAPI.Dto.User;
 using MyFavoriteMovie.WebAPI.Utiles;
 
@@ -21,7 +22,7 @@ namespace MyFavoriteMovie.WebAPI.Controllers
 
         [HttpPost]
         [ActionName("Registration")]
-        public async Task<IActionResult> RegistrationAsync([FromForm] UserDto_AuthModel userDto)
+        public async Task<IActionResult> RegistrationAsync([FromForm] AuthDto_RegistrationModel userDto)
         {
             try
             {
@@ -61,7 +62,7 @@ namespace MyFavoriteMovie.WebAPI.Controllers
                 var getUserResult = await _authRepository.GetAsync(u => u.Nickname == userDto.Nickname);
 
                 if (getUserResult.Success)
-                    return Ok(_authService.GetAuthData(getUserResult.Result!.Id));
+                    return Ok(_authService.GetAuthData(getUserResult.Result!));
 
                 return BadRequest(getUserResult.Message);
             }
@@ -73,26 +74,37 @@ namespace MyFavoriteMovie.WebAPI.Controllers
 
         [HttpPost]
         [ActionName("Login")]
-        public async Task<IActionResult> LogInAsync([FromForm] UserDto_AuthModel userDto)
+        public async Task<IActionResult> LoginAsync([FromForm] AuthDto_LogInModel userDto)
         {
             try
             {
+                if (userDto.EmailNickname == null) return BadRequest("Email or Nickname is null.");
                 if (userDto.Password == null) return BadRequest("Password is null.");
 
                 var getUserResult = await _authRepository.GetAsync(
-                    u => u.Nickname == userDto.Nickname || u.Email == userDto.Email);
+                    u => u.Nickname == userDto.EmailNickname || u.Email == userDto.EmailNickname);
 
                 if (getUserResult.Success)
                 {
                     User? user = getUserResult.Result;
 
-                    if (user == null)
-                        return NotFound();
+                    if (user == null || !_authService.VerifyPassword(user.Password!, userDto.Password))
+                        return BadRequest("Invalid Email/Nickname or Password.");
 
-                    if (!_authService.VerifyPassword(user.Password!, userDto.Password))
-                        return BadRequest("Invalid password.");
+                    var authData = _authService.GetAuthData(user);
 
-                    return Ok(_authService.GetAuthData(user.Id));
+                    HttpContext.Response.Cookies.Append(
+                        "token",
+                        authData.Token!,
+                        new CookieOptions()
+                        {
+                            Expires = DateTime.Now.AddMilliseconds(authData.TokenExpirationTime),
+                            HttpOnly = true,
+                            Secure = true,
+                            SameSite = SameSiteMode.None
+                        });
+
+                    return Ok(authData);
                 }
 
                 return BadRequest(getUserResult.Message);

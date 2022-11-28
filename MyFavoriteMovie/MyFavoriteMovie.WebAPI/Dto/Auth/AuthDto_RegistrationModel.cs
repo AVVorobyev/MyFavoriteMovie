@@ -1,6 +1,6 @@
 ﻿namespace MyFavoriteMovie.WebAPI.Dto.User
 {
-    public class UserDto_AuthModel
+    public class AuthDto_RegistrationModel
     {
         public string? Nickname { get; set; }
         public string? Email { get; set; }

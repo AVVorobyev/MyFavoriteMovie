@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using MyFavoriteMovie.Core;
 using MyFavoriteMovie.Core.Models;
 using MyFavoriteMovie.Core.Repositories.Interfaces;
@@ -13,6 +14,7 @@ using System.Text.Json;
 
 namespace MyFavoriteMovie.WebAPI.Controllers
 {
+    [Authorize]
     public class MovieController : Controller
     {
         private readonly IMovieRepository _movieRepository;

@@ -1,5 +1,6 @@
 ﻿using CryptoHelper;
 using Microsoft.IdentityModel.Tokens;
+using MyFavoriteMovie.Core.Models;
 using MyFavoriteMovie.Core.Services.Interfaces;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -17,8 +18,7 @@ namespace MyFavoriteMovie.Core.Services
             _jwtSecret = jwtSecret;
             _jwtLifespan = jwtLifespan;
         }
-
-        public AuthData GetAuthData(int userId)
+        public AuthData GetAuthData(User user)
         {
             var expirationTime = DateTime.UtcNow.AddSeconds(_jwtLifespan);
 
@@ -26,7 +26,8 @@ namespace MyFavoriteMovie.Core.Services
             {
                 Subject = new ClaimsIdentity(new[]
                 {
-                    new Claim(ClaimTypes.Name.ToString(), userId.ToString())
+                    new Claim(ClaimTypes.Name.ToString(), user.Id.ToString()),
+                    new Claim(ClaimTypes.Role.ToString(), user.Role!)
                 }),
                 Expires = expirationTime,
                 SigningCredentials = new SigningCredentials(
@@ -41,7 +42,8 @@ namespace MyFavoriteMovie.Core.Services
 
             return new AuthData()
             {
-                Id = userId,
+                Id = user.Id,
+                Role = user.Role,
                 Token = token,
                 TokenExpirationTime = ((DateTimeOffset)expirationTime).ToUnixTimeSeconds()
             };
