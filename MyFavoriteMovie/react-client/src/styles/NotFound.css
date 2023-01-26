@@ -1,0 +1,13 @@
+.notfound_conteiner {
+    text-align: center;
+    display: contents;
+    vertical-align: top;
+}
+
+.notfound_header {
+    font-size: 100px;
+}
+
+.notfound_message {
+    font-size: 50px;
+}
