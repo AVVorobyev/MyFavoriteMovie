@@ -1,17 +1,20 @@
 import React, { Component } from 'react';
-import "../../styles/NotFound.css";
+import "../../styles/Errors.css";
+import { Header } from '../../components/Header';
 
 export class NotFound extends Component {
     render() {
-        return (
-            <div className='notfound_conteiner'>
-                <div className='notfound_header'>
+        return (            
+            <div className='error_conteiner'>
+                <Header /> 
+                
+                <div className='error_header'>
                     Opps!..
                 </div>
-                <div className='notfound_message'>
+                <div className='error_message'>
                     404
                 </div>
-                <div className='notfound_message'>
+                <div className='error_message'>
                     The resource you requested was not found!
                 </div>
             </div>

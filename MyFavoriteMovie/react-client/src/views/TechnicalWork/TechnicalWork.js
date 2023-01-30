@@ -1,15 +1,16 @@
 import React, { Component } from "react";
+import "../../styles/Errors.css";
 
 export class TechnicalWork extends Component {
 
     render() {
 
         return (
-            <div className='notfound_conteiner'>
-                <div className='notfound_header'>
+            <div className='error_conteiner'>
+                <div className='error_header'>
                     Technical works!
                 </div>
-                <div className='notfound_message'>
+                <div className='error_message'>
                     We'll get it fixed soon!
                 </div>
             </div>

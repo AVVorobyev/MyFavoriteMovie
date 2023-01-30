@@ -1,13 +1,13 @@
-.notfound_conteiner {
+.error_conteiner {
     text-align: center;
     display: contents;
     vertical-align: top;
 }
 
-.notfound_header {
+.error_header {
     font-size: 100px;
 }
 
-.notfound_message {
+.error_message {
     font-size: 50px;
 }
