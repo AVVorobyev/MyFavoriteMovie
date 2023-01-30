@@ -11,6 +11,8 @@ import { ActorByIdWrapper } from './views/Actor/ActorByIdWrapper';
 import { Registration } from './views/Auth/Registation';
 import { Login } from './views/Auth/Login';
 import axios from 'axios';
+import { NotFound } from './views/NotFound/NotFound';
+import { TechnicalWork } from './views/TechnicalWork/TechnicalWork';
 
 axios.interceptors.request.use(
   options => {
@@ -26,20 +28,20 @@ axios.interceptors.response.use(response => {
   return response;
 }, error => {
   if (error.response.status === 401) {
-    window.location = "/Auth/Login"
+    window.location = "/Auth/Login";
+  }
+  else if (error.response.status === 404) {
+    window.response.status = "/NotFound";
   }
   else
-    return Promise.reject(error);
+    window.location = "/TechnicalWork";
+  return Promise.reject(error);
 });
-
 
 function App() {
   return (
-    <div className="container">
-      <h3>
-        App page
-      </h3>
 
+    <div className="container">
       <Router>
         <Routes>
           <Route path='/Movie/Movies' element={<Movies />} />
@@ -48,11 +50,13 @@ function App() {
           <Route path='/Actor/Actor/:actorId' element={<ActorByIdWrapper />} />
           <Route path='/Auth/Registration' element={<Registration />} />
           <Route path='/Auth/Login' element={<Login />} />
+          <Route path='/NotFound' element={<NotFound />} />
+          <Route path='/TechnicalWork' element={<TechnicalWork />} />
         </Routes>
       </Router>
 
     </div>
-  );
+  )
 }
 
 export default App;
