@@ -4,6 +4,7 @@ import "../../styles/Main.css";
 import "../../styles/Form.css";
 import axios from "axios";
 import validator from "validator";
+import { Header } from "../../components/Header";
 
 export class Registration extends Component {
     constructor(prop) {
@@ -40,7 +41,7 @@ export class Registration extends Component {
                 data: formData
             }).then(response => {
             }, error => {
-                result = error.response.data;
+                result = error.response.data.Result;
             });
         }
 
@@ -69,12 +70,15 @@ export class Registration extends Component {
                     "nickname": nickname
                 }
             }).then(response => {
-                if (response.data === false)
-                    result = "• The nickname is not unique.";
-                else if (response.data === true)
-                    result = '';
-            }, error => {
-                result = error.response.data;
+                if (response.data.Success) {
+                    if (response.data.Result === false)
+                        result = "• The nickname is not unique.";
+                    else if (response.data.Result === true)
+                        result = '';
+                }
+                else {
+                    result = response.data.Message;
+                }
             });
         }
 
@@ -98,11 +102,16 @@ export class Registration extends Component {
 
         return (
             <div className="form_container">
+                <Header />
+
                 <Form onSubmit={this.handleSubmit}
                     className="form">
                     <Form.Group id="email">
                         <div className="form_text_start">Email</div>
-                        <Form.Control onChange={(e) => { this.emailValidation(e.target.value); }} required name="email" type="text" placeholder="Email"></Form.Control>
+                        <Form.Control onChange={(e) => { this.emailValidation(e.target.value); }}
+                            required name="email"
+                            type="text"
+                            placeholder="Email"></Form.Control>
                         <div className="form_validation_result">{emailValidationResultMessage}</div>
                     </Form.Group>
 
@@ -110,7 +119,10 @@ export class Registration extends Component {
 
                     <Form.Group id="nickname">
                         <div className="form_text_start">Nickname</div>
-                        <Form.Control onChange={(e) => { this.nicknameValidation(e.target.value); }} required name="nickname" type="text" placeholder="Nickname"></Form.Control>
+                        <Form.Control onChange={(e) => { this.nicknameValidation(e.target.value); }}
+                            required name="nickname"
+                            type="text"
+                            placeholder="Nickname"></Form.Control>
                         <div className="form_validation_result">{nicknameValidationResultMessage}</div>
                     </Form.Group>
 
@@ -118,14 +130,20 @@ export class Registration extends Component {
 
                     <Form.Group id="password">
                         <div className="form_text_start">Password</div>
-                        <Form.Control onChange={(e) => { this.passwordValidation(e.target.value); }} required name="password" type="password" placeholder="Password"></Form.Control>
+                        <Form.Control onChange={(e) => { this.passwordValidation(e.target.value); }}
+                            required
+                            name="password"
+                            type="password" placeholder="Password"></Form.Control>
                     </Form.Group>
 
                     <div className="delimiter_H5"></div>
 
                     <Form.Group id="confirm">
                         <div className="form_text_start">Confirm</div>
-                        <Form.Control required name="confirm" type="password" placeholder="Confirm"></Form.Control>
+                        <Form.Control required
+                            name="confirm"
+                            type="password"
+                            placeholder="Confirm"></Form.Control>
                         <div className="form_validation_result">{passwordValidationResultMessage}</div>
                     </Form.Group>
 

@@ -4,6 +4,7 @@ import { Button, Form } from "react-bootstrap";
 import "../../styles/Main.css";
 import "../../styles/Form.css";
 import axios from "axios";
+import { Header } from "../../components/Header";
 
 export class Login extends Component {
     constructor(props) {
@@ -28,9 +29,12 @@ export class Login extends Component {
             method: "POST",
             data: formData
         }).then(response => {
-            alert("Success! User page will develop soon.");
-        }, error => {
-            result = error.response.data;
+            if (response.data.Success) {
+                alert("Success! User page will develop soon.");
+            }
+            else {
+                result = response.data.Message;
+            }
         });
 
         this.setState({ responseResult: result });
@@ -41,6 +45,7 @@ export class Login extends Component {
 
         return (
             <div className="form_container">
+                <Header />
 
                 <Form onSubmit={this.handleSubmit}
                     className="form">

@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using MyFavoriteMovie.Core;
 using MyFavoriteMovie.Core.Models;
 using MyFavoriteMovie.Core.Repositories.Interfaces;
+using MyFavoriteMovie.Core.Services;
 using MyFavoriteMovie.Core.Services.Auth;
 using MyFavoriteMovie.Core.Services.Interfaces;
 using MyFavoriteMovie.WebAPI.Dto.Auth;
@@ -26,23 +28,27 @@ namespace MyFavoriteMovie.WebAPI.Controllers
         {
             try
             {
-                if (userDto.Email == null) return BadRequest("Email is null.");
-                if (userDto.Nickname == null) return BadRequest("Nickname is null.");
-                if (userDto.Password == null) return BadRequest("Password is null.");
+                if (userDto.Email == null)
+                    return Ok(DomainResult.Failed("Email is null."));
+
+                if (userDto.Nickname == null)
+                    return Ok(DomainResult.Failed("Nickname is null."));
+
+                if (userDto.Password == null)
+                    return Ok(DomainResult.Failed("Password is null."));
 
                 if (!_authRepository.IsNicknameUnique(userDto.Nickname).Result)
-                    return BadRequest("User with such Nickname already exists.");
+                    return Ok(DomainResult.Failed("User with such Nickname already exists"));
 
                 if (!_authRepository.IsEmailUnique(userDto.Email).Result)
-                    return BadRequest("User with such Email already exists.");
+                    return Ok(DomainResult.Failed("User with such Email already exists."));
 
                 var hashedPassword = _authService.HashPassword(userDto.Password);
 
                 var isUserFirstInDBResult = _authRepository.IsUserFirstInDB();
 
                 if (!isUserFirstInDBResult.Success)
-                    return BadRequest(isUserFirstInDBResult.Message);
-
+                    return Ok(DomainResult.Failed(isUserFirstInDBResult.Message ?? "Unknown error."));
                 string role = isUserFirstInDBResult.Result ? AuthRoles.AdministratorRole : AuthRoles.UserRole;
 
                 User user = new()
@@ -57,18 +63,18 @@ namespace MyFavoriteMovie.WebAPI.Controllers
                 var addUserResult = await _authRepository.AddAsync(user);
 
                 if (!addUserResult.Success)
-                    return BadRequest(addUserResult.Message);
+                    return Ok(DomainResult.Failed(addUserResult.Message ?? "Unknown error."));
 
                 var getUserResult = await _authRepository.GetAsync(u => u.Nickname == userDto.Nickname);
 
                 if (getUserResult.Success)
-                    return Ok(_authService.GetAuthData(getUserResult.Result!));
+                    return Ok(DomainResult<AuthData>.Succeeded(_authService.GetAuthData(getUserResult.Result!)));
 
-                return BadRequest(getUserResult.Message);
+                return Ok(DomainResult.Failed(getUserResult.Message ?? "Unknown error."));
             }
             catch (Exception e)
             {
-                return BadRequest(e.Message + Environment.NewLine + e.InnerException);
+                return Ok(DomainResult.Failed(e.Message + Environment.NewLine + e.InnerException));
             }
         }
 
@@ -78,8 +84,8 @@ namespace MyFavoriteMovie.WebAPI.Controllers
         {
             try
             {
-                if (userDto.EmailNickname == null) return BadRequest("Email or Nickname is null.");
-                if (userDto.Password == null) return BadRequest("Password is null.");
+                if (userDto.EmailNickname == null) return Ok(DomainResult.Failed("Email or Nickname is null."));
+                if (userDto.Password == null) return Ok(DomainResult.Failed("Password or Nickname is null."));
 
                 var getUserResult = await _authRepository.GetAsync(
                     u => u.Nickname == userDto.EmailNickname || u.Email == userDto.EmailNickname);
@@ -89,7 +95,7 @@ namespace MyFavoriteMovie.WebAPI.Controllers
                     User? user = getUserResult.Result;
 
                     if (user == null || !_authService.VerifyPassword(user.Password!, userDto.Password))
-                        return BadRequest("Invalid Email/Nickname or Password.");
+                        return Ok(DomainResult.Failed("Invalid Email/Nickname or Password."));
 
                     var authData = _authService.GetAuthData(user);
 
@@ -104,14 +110,14 @@ namespace MyFavoriteMovie.WebAPI.Controllers
                             SameSite = SameSiteMode.None
                         });
 
-                    return Ok(authData);
+                    return Ok(DomainResult<AuthData>.Succeeded(authData));
                 }
 
-                return BadRequest(getUserResult.Message);
+                return Ok(DomainResult.Failed(getUserResult.Message ?? "Unknown error."));
             }
             catch (Exception e)
             {
-                return BadRequest(e.Message + Environment.NewLine + e.InnerException);
+                return Ok(DomainResult.Failed(e.Message + Environment.NewLine + e.InnerException));
             }
         }
 
@@ -124,13 +130,13 @@ namespace MyFavoriteMovie.WebAPI.Controllers
                 var result = _authRepository.IsNicknameUnique(nickname);
 
                 if (result.Success)
-                    return Ok(result.Result);
+                    return Ok(DomainResult<bool>.Succeeded(result.Result));
 
-                return BadRequest(result.Message);
+                return Ok(DomainResult.Failed(result.Message ?? "Unknown error."));
             }
             catch (Exception e)
             {
-                return BadRequest(e.Message + Environment.NewLine + e.InnerException);
+                return Ok(DomainResult.Failed(e.Message + Environment.NewLine + e.InnerException));
             }
         }
 
@@ -143,13 +149,13 @@ namespace MyFavoriteMovie.WebAPI.Controllers
                 var result = _authRepository.IsEmailUnique(email);
 
                 if (result.Success)
-                    return Ok(result.Result);
+                    return Ok(DomainResult<bool>.Succeeded(result.Result));
 
-                return BadRequest(result.Message);
+                return Ok(DomainResult.Failed(result.Message ?? "Unknown error."));
             }
             catch (Exception e)
             {
-                return BadRequest(e.Message + Environment.NewLine + e.InnerException);
+                return Ok(DomainResult.Failed(e.Message + Environment.NewLine + e.InnerException));
             }
         }
     }
