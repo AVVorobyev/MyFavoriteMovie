@@ -49,6 +49,20 @@ namespace MyFavoriteMovie.Core.Services
             };
         }
 
+        public static int DecodeToken(string token)
+        {
+            var tokenHandler = new JwtSecurityTokenHandler();
+
+            var decodedToken = tokenHandler.ReadJwtToken(token);
+
+            string? idStr = decodedToken.Claims.FirstOrDefault(c =>
+                c.Type == "name")?.Value;
+
+            var success = int.TryParse(idStr, out int id);
+
+            return success ? id : -1;
+        }
+
         public string HashPassword(string password)
         {
             return Crypto.HashPassword(password);

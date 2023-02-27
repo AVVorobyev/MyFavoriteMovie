@@ -5,11 +5,13 @@ import "../../styles/Main.css";
 import "../../styles/Form.css";
 import axios from "axios";
 import { Header } from "../../components/Header";
+import { Navigate } from "react-router-dom";
+import { User } from "./User";
 
 export class Login extends Component {
     constructor(props) {
         super(props);
-        this.state = { responseResult: '' };
+        this.state = { responseResult: '', redirect: false };
         this.handleSubmit = this.handleSubmit.bind(this);
     }
 
@@ -30,7 +32,7 @@ export class Login extends Component {
             data: formData
         }).then(response => {
             if (response.data.Success) {
-                alert("Success! User page will develop soon.");
+                this.setRedirect();
             }
             else {
                 result = response.data.Message;
@@ -40,12 +42,22 @@ export class Login extends Component {
         this.setState({ responseResult: result });
     }
 
+    renderRedirect() {
+        if (this.state.redirect)
+            return <Navigate to="/Auth/User" />
+    }
+
+    setRedirect() {
+        this.setState({ redirect: true });
+    }
+
     render() {
         let { responseResult } = this.state;
 
         return (
             <div className="form_container">
                 <Header />
+                {this.renderRedirect()}
 
                 <Form onSubmit={this.handleSubmit}
                     className="form">

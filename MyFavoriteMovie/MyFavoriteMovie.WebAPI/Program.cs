@@ -5,6 +5,7 @@ using MyFavoriteMovie.Core.Contexts;
 using MyFavoriteMovie.Core.Repositories;
 using MyFavoriteMovie.Core.Repositories.Interfaces;
 using MyFavoriteMovie.Core.Services;
+using MyFavoriteMovie.Core.Services.Auth;
 using MyFavoriteMovie.Core.Services.Interfaces;
 using MyFavoriteMovie.WebAPI.Middlewares;
 using Newtonsoft.Json.Serialization;
@@ -65,7 +66,13 @@ builder.Services.AddAntiforgery(
     }
 );
 
-builder.Services.AddAuthorization();
+builder.Services.AddAuthorization(options =>
+    options.AddPolicy("DefaultPolicy", policy =>
+        policy.RequireRole(
+            AuthRoles.UserRole,
+            AuthRoles.ModeratorRole,
+            AuthRoles.AdministratorRole)));
+
 builder.Services.AddScoped<IMovieRepository, MovieRepository>();
 builder.Services.AddScoped<IActorRepository, ActorRepository>();
 builder.Services.AddScoped<IEpisodeRepository, EpisodeRepository>();

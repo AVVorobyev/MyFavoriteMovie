@@ -170,9 +170,15 @@ namespace MyFavoriteMovie.WebAPI.Controllers
         {
             try
             {
-                var idSrt = Request.Cookies.FirstOrDefault(c => c.Key == "id").Value;
+                var token = Request.Cookies.FirstOrDefault(c =>
+                    c.Key == "token").Value;
 
-                if (!int.TryParse(idSrt, out int id))
+                if (token == null)
+                    return Unauthorized();
+
+                var id = AuthService.DecodeToken(token);
+
+                if (id < 0)
                     return Unauthorized();
 
                 var userResult = await _authRepository.GetAsync(u => u.Id == id);

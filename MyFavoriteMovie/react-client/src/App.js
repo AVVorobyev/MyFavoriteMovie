@@ -14,6 +14,7 @@ import axios from 'axios';
 import { NotFound } from './views/NotFound/NotFound';
 import { TechnicalWork } from './views/TechnicalWork/TechnicalWork';
 import { BadRequest } from './views/BadRequest/BadRequest';
+import { User } from './views/Auth/User';
 
 axios.interceptors.request.use(
   options => {
@@ -35,8 +36,7 @@ axios.interceptors.response.use(response => {
     window.location = "/NotFound";
   }
   else if (error.response.status === 400) {
-    console.log(error);
-    window.location =  "/BadRequest";
+    window.location = "/BadRequest";
   }
   else
     window.location = "/TechnicalWork";
@@ -57,6 +57,7 @@ function App() {
           <Route path='/NotFound' element={<NotFound />} />
           <Route path='/TechnicalWork' element={<TechnicalWork />} />
           <Route path='/BadRequest' element={<BadRequest />} />
+          <Route path='/Auth/User' element={<User />} />
         </Routes>
       </Router>
 
