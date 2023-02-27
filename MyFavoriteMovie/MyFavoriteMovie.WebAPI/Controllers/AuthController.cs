@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using MyFavoriteMovie.Core;
 using MyFavoriteMovie.Core.Models;
 using MyFavoriteMovie.Core.Repositories.Interfaces;
@@ -99,16 +100,19 @@ namespace MyFavoriteMovie.WebAPI.Controllers
 
                     var authData = _authService.GetAuthData(user);
 
+                    var cookieOptions = new CookieOptions
+                    {
+                        Expires = DateTime.Now.AddMilliseconds(authData.TokenExpirationTime),
+                        HttpOnly = false,
+                        Secure = true,
+                        SameSite = SameSiteMode.None
+                    };
+
                     HttpContext.Response.Cookies.Append(
                         "token",
                         authData.Token!,
-                        new CookieOptions()
-                        {
-                            Expires = DateTime.Now.AddMilliseconds(authData.TokenExpirationTime),
-                            HttpOnly = true,
-                            Secure = true,
-                            SameSite = SameSiteMode.None
-                        });
+                        cookieOptions
+                        );
 
                     return Ok(DomainResult<AuthData>.Succeeded(authData));
                 }
@@ -152,6 +156,43 @@ namespace MyFavoriteMovie.WebAPI.Controllers
                     return Ok(DomainResult<bool>.Succeeded(result.Result));
 
                 return Ok(DomainResult.Failed(result.Message ?? "Unknown error."));
+            }
+            catch (Exception e)
+            {
+                return Ok(DomainResult.Failed(e.Message + Environment.NewLine + e.InnerException));
+            }
+        }
+
+        [HttpGet]
+        [Authorize]
+        [ActionName("Profile")]
+        public async Task<IActionResult> GetProfileAsync()
+        {
+            try
+            {
+                var idSrt = Request.Cookies.FirstOrDefault(c => c.Key == "id").Value;
+
+                if (!int.TryParse(idSrt, out int id))
+                    return Unauthorized();
+
+                var userResult = await _authRepository.GetAsync(u => u.Id == id);
+
+                if (userResult.Success && userResult.Result != null)
+                {
+                    var userDto = new AuthDto_User()
+                    {
+                        Nickname = userResult.Result.Nickname,
+                        Name = userResult.Result.Name,
+                        Surname = userResult.Result.Surname,
+                        Email = userResult.Result.Email,
+                        RegistrationDate = userResult.Result.RegistrationDate,
+                        Role = userResult.Result.Role
+                    };
+
+                    return Ok(DomainResult<AuthDto_User>.Succeeded(userDto));
+                }
+                else
+                    return Ok(DomainResult.Failed(userResult.Message ?? "Unknown error."));
             }
             catch (Exception e)
             {

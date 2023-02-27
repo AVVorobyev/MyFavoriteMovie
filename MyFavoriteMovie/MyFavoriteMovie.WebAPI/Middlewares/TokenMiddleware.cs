@@ -13,7 +13,9 @@
         {
             var token = context.Request.Cookies["token"];
 
-            if (!string.IsNullOrEmpty(token))
+            if (!string.IsNullOrEmpty(token)
+                && context.Request.Headers.FirstOrDefault(
+                    h => h.Key == "Authorization").Key == null)
             {
                 context.Request.Headers.Add("Authorization", "Bearer " + token);
             }
