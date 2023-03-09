@@ -26,7 +26,8 @@ namespace MyFavoriteMovie.Core.Services
             {
                 Subject = new ClaimsIdentity(new[]
                 {
-                    new Claim(ClaimTypes.Name.ToString(), user.Id.ToString()),
+                    new Claim("id", user.Id.ToString()),
+                    new Claim("nickname", user.Nickname!),
                     new Claim(ClaimTypes.Role.ToString(), user.Role!)
                 }),
                 Expires = expirationTime,
@@ -56,7 +57,7 @@ namespace MyFavoriteMovie.Core.Services
             var decodedToken = tokenHandler.ReadJwtToken(token);
 
             string? idStr = decodedToken.Claims.FirstOrDefault(c =>
-                c.Type == "name")?.Value;
+                c.Type == "id")?.Value;
 
             var success = int.TryParse(idStr, out int id);
 
