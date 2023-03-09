@@ -39,13 +39,13 @@ export class Movie extends Component {
                 id: this.props.movieId
             }
         }).then(response => {
-            this.setState({ movie: response.data });
+            this.setState({ movie: response.data.Result });
 
-            if (response.data.Poster === null || response.data.Poster === undefined) {
+            if (response.data.Result.Poster === null || response.data.Result.Poster === undefined) {
                 this.setState({ posterImage: defaultPosterImage });
             }
             else {
-                this.setState({ posterImage: response.data.Poster });
+                this.setState({ posterImage: response.data.Result.Poster });
             }
         })
     }

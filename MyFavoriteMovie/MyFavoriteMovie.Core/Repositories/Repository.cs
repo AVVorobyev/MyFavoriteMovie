@@ -149,7 +149,7 @@ namespace MyFavoriteMovie.Core.Repositories
 
             return _domainResult;
         }
-
+                
         public async Task<DomainResult<int>> GetCountAsync()
         {
             try
