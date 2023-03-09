@@ -4,9 +4,9 @@ import "../../styles/Main.css";
 import "../../styles/Form.css";
 import axios from "axios";
 import validator from "validator";
-import { Header } from "../../components/Header";
+import { Header } from "../../components/Header/Header";
 
-export class Registration extends Component {
+export class Registration extends Component { // if authed then redirect to User page 
     constructor(prop) {
         super(prop);
         this.state = { responseResult: '', emailValidationResultMessage: '', nicknameValidationResultMessage: '', passwordValidationResultMessage: '' };

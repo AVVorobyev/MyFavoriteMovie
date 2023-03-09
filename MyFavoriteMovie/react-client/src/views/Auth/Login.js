@@ -4,9 +4,8 @@ import { Button, Form } from "react-bootstrap";
 import "../../styles/Main.css";
 import "../../styles/Form.css";
 import axios from "axios";
-import { Header } from "../../components/Header";
+import { Header } from "../../components/Header/Header";
 import { Navigate } from "react-router-dom";
-import { User } from "./User";
 
 export class Login extends Component {
     constructor(props) {

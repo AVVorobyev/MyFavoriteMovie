@@ -7,6 +7,10 @@ import '../../../src/styles/Main.css';
 import DateFormater from "../../components/DateFormater";
 import TimeSpanFormater from "../../components/TimeSpanFormater";
 import { EditActorsListModal } from "./EditActorsListModal";
+import { Header } from "../../components/Header/Header";
+import Visible from "../../components/Auth/Visible";
+import getRoleFromCookies from "../../components/Auth/GetRoleFromCookies";
+import { Role } from "../../components/Auth/Roles";
 
 const defaultPosterImage = process.env.REACT_APP_Default_Images + "defaultPosterImage.jpg";
 
@@ -50,14 +54,19 @@ export class Movie extends Component {
         this.getMovieById();
     }
 
+    componentDidUpdate(prevProps) {
+        if (this.props.movieId !== prevProps.movieId)
+            this.getMovieById();
+    }
+
     deleteMovie(movie) {
 
         if (window.confirm('Are you sure?')) {
             axios({
                 method: "DELETE",
                 url: process.env.REACT_APP_API_URL_Movie + 'Delete',
-                params : {
-                    movieId : movie.Id
+                params: {
+                    movieId: movie.Id
                 }
             }).then(response => {
                 alert(response.data);
@@ -71,9 +80,12 @@ export class Movie extends Component {
     render() {
         let { movie } = this.state;
         let { posterImage } = this.state;
+        const role = getRoleFromCookies();
 
         return (
             <div>
+                <Header />
+
                 {this.renderRedirect()}
 
                 <div className="main_container">
@@ -138,24 +150,32 @@ export class Movie extends Component {
                     </div>
                 </div >
 
-                <ButtonToolbar>
-                    <NavLink to="/Movie/Movies" className="btn btn-primary">To Movies</NavLink>
-                    <Button onClick={() => this.setState({ editMovieShow: true, movie: movie })}
-                        variant='info'>Edit</Button>
-                    <Button
-                        onClick={() => { this.deleteMovie(movie); }}
-                        variant='danger'>Delete</Button>
+                <NavLink to="/Movie/Movies" className="btn btn-primary">To Movies</NavLink>
 
-                    <EditMovieModal show={this.state.editMovieShow}
-                        onHide={() => this.setState({ editMovieShow: false })}
-                        Id={movie.Id}
-                        Name={movie.Name}
-                        Description={movie.Description}
-                        ReleaseDate={movie.ReleaseDate}
-                        Duration={movie.Duration}
-                        Poster={posterImage}>
-                    </EditMovieModal>
-                </ButtonToolbar>
+                <Visible
+                    component={
+                        <ButtonToolbar>
+                            <Button onClick={() => this.setState({ editMovieShow: true, movie: movie })}
+                                variant='info'>Edit
+                            </Button>
+
+                            <Button
+                                onClick={() => { this.deleteMovie(movie); }}
+                                variant='danger'>Delete</Button>
+                        </ButtonToolbar>
+                    }
+                    isVisible={role === Role.Administrator || role === Role.Moderator}>
+                </Visible>
+
+                <EditMovieModal show={this.state.editMovieShow}
+                    onHide={() => this.setState({ editMovieShow: false })}
+                    Id={movie.Id}
+                    Name={movie.Name}
+                    Description={movie.Description}
+                    ReleaseDate={movie.ReleaseDate}
+                    Duration={movie.Duration}
+                    Poster={posterImage}>
+                </EditMovieModal>
             </div >
         )
     }

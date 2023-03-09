@@ -1,7 +1,7 @@
 import axios from "axios";
 import React, { Component } from "react";
 import DateFormater from "../../components/DateFormater";
-import { Header } from "../../components/Header";
+import { Header } from "../../components/Header/Header";
 import '../../styles/Main.css';
 
 export class User extends Component {

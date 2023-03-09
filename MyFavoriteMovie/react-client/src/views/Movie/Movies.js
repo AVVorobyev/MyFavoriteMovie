@@ -6,6 +6,7 @@ import { AddMovieModal } from "./AddMovieModal";
 import { NavLink } from "react-router-dom";
 import DateFormater from '../../components/DateFormater.js';
 import TimeSpanFormater from "../../components/TimeSpanFormater";
+import { Header } from "../../components/Header/Header";
 
 export class Movies extends Component {
 
@@ -67,6 +68,7 @@ export class Movies extends Component {
 
         return (
             <div>
+                <Header /> 
                 <h1>Movies</h1>
 
                 <div className="main_lists_container">

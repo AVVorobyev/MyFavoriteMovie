@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import "../../styles/Errors.css";
-import { Header } from '../../components/Header';
+import { Header } from "../../components/Header/Header";
 
 export class NotFound extends Component {
     render() {
