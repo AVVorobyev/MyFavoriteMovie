@@ -2,7 +2,7 @@
 
 namespace MyFavoriteMovie.WebAPI.Dto.Actor
 {
-    public class ActorDtoGet
+    public class ActorDto_Get
     {
         public int Id { get; set; }
         public string? Name { get; set; }
