@@ -80,13 +80,12 @@ namespace MyFavoriteMovie.WebAPI.Controllers
                     return Ok(DomainResult<MovieDto_MovieAction>.Succeeded(movieDto));
                 }
 
-                _logger.LogError(result.Message);
-
-                return Ok(DomainResult.Failed(result.Message ?? "Unknown error."));
+                throw new Exception(result.Message);
             }
             catch (Exception e)
             {
                 _logger.LogError(e.Message + Environment.NewLine + e.InnerException);
+
                 return Ok(DomainResult.Failed(e.Message + Environment.NewLine + e.InnerException));
             }
         }
@@ -111,14 +110,18 @@ namespace MyFavoriteMovie.WebAPI.Controllers
 
                 if (moviesRresult.Success && countResult.Success)
                 {
-                    var movies = moviesRresult.Result!;
+                    var movies = moviesRresult.Result;
+
+                    if (movies == null)
+                        return NotFound();
+
                     double averageRate;
                     List<MovieDto_MoviesAction> movieListDto = new();
 
                     string? poster = null;
                     string path = _environment.WebRootPath + WebConsts.MoviePosterDirectory;
 
-                    foreach (var movie in movies!)
+                    foreach (var movie in movies)
                     {
                         averageRate = GetAverageRate(movie);
 
@@ -152,13 +155,12 @@ namespace MyFavoriteMovie.WebAPI.Controllers
 
                 var errorMessage = moviesRresult.Message + Environment.NewLine + countResult.Message;
 
-                _logger.LogError(errorMessage);
-
-                return Ok(DomainResult.Failed(errorMessage ?? "Unknown error."));
+                throw new Exception(errorMessage);
             }
             catch (Exception e)
             {
                 _logger.LogError(e.Message + Environment.NewLine + e.InnerException);
+
                 return Ok(DomainResult.Failed(e.Message + Environment.NewLine + e.InnerException));
             }
         }
@@ -208,13 +210,12 @@ namespace MyFavoriteMovie.WebAPI.Controllers
                 if (result.Success)
                     return Ok(DomainResult.Succeeded());
 
-                _logger.LogError(result.Message);
-
-                return Ok(DomainResult.Failed(result.Message ?? "Unknown error."));
+                throw new Exception(result.Message);
             }
             catch (Exception e)
             {
                 _logger.LogError(e.Message + Environment.NewLine + e.InnerException);
+
                 return Ok(DomainResult.Failed(e.Message + Environment.NewLine + e.InnerException));
             }
         }
@@ -240,17 +241,18 @@ namespace MyFavoriteMovie.WebAPI.Controllers
                 {
                     var oldMovie = movieResult.Result;
 
-                    if (oldMovie != null)
+                    if (oldMovie == null)
                         return NotFound();
 
                     string? newPoster = null;
                     var path = _environment.WebRootPath + WebConsts.MoviePosterDirectory;
-                    var oldPoster = oldMovie!.Poster;
+                    var oldPoster = oldMovie.Poster;
 
-                    if (oldPoster != null) FileManager.Delete(oldPoster, path);
+                    if (oldPoster != null)
+                        FileManager.Delete(oldPoster, path);
 
                     if (movieDto.PosterFile != null)
-                        newPoster = await FileManager.SaveAsync(movieDto.PosterFile!, path);
+                        newPoster = await FileManager.SaveAsync(movieDto.PosterFile, path);
 
                     var movie = new Movie()
                     {
@@ -268,18 +270,20 @@ namespace MyFavoriteMovie.WebAPI.Controllers
                         DirectedBy = movieDto.DirectedBy
                     };
 
-                    await _movieRepository.UpdateAsync(movie);
+                    var result = await _movieRepository.UpdateAsync(movie);
 
-                    return Ok(DomainResult.Succeeded());
+                    if (result.Success)
+                        return Ok(DomainResult.Succeeded());
+
+                    throw new Exception(result.Message);
                 }
 
-                _logger.LogError(movieResult.Message);
-
-                return Ok(DomainResult.Failed(movieResult.Message ?? "Unknown error."));
+                throw new Exception(movieResult.Message);
             }
             catch (Exception e)
             {
                 _logger.LogError(e.Message + Environment.NewLine + e.InnerException);
+
                 return Ok(DomainResult.Failed(e.Message + Environment.NewLine + e.InnerException));
             }
         }
@@ -298,7 +302,8 @@ namespace MyFavoriteMovie.WebAPI.Controllers
 
             try
             {
-                var movieResult = await _movieRepository.GetAsync(filter: m => m.Id == movieId, asNoTracking: true);
+                var movieResult = await _movieRepository.GetAsync(
+                    filter: m => m.Id == movieId, asNoTracking: true);
 
                 if (movieResult.Success)
                 {
@@ -317,13 +322,12 @@ namespace MyFavoriteMovie.WebAPI.Controllers
                     return Ok(DomainResult.Succeeded());
                 }
 
-                _logger.LogError(movieResult.Message);
-
-                return Ok(DomainResult.Failed(movieResult.Message ?? "Unknown error."));
+                throw new Exception(movieResult.Message);
             }
             catch (Exception e)
             {
                 _logger.LogError(e.Message + Environment.NewLine + e.InnerException);
+
                 return Ok(DomainResult.Failed(e.Message + Environment.NewLine + e.InnerException));
             }
         }
@@ -353,23 +357,27 @@ namespace MyFavoriteMovie.WebAPI.Controllers
                     var movie = movieResult.Result;
                     var actor = actorResult.Result;
 
-                    if (movie != null && actor != null)
-                        movie!.Actors.Add(actor);
+                    if (movie == null || actor == null)
+                        return NotFound();
 
-                    await _movieRepository.UpdateAsync(movie!);
+                    movie.Actors.Add(actor);
 
-                    return Ok(DomainResult.Succeeded());
+                    var result = await _movieRepository.UpdateAsync(movie);
+
+                    if (result.Success)
+                        return Ok(DomainResult.Succeeded());
+
+                    throw new Exception(result.Message);
                 }
 
                 var errorMessage = actorResult.Message + Environment.NewLine + actorResult.Message;
 
-                _logger.LogError(errorMessage);
-
-                return Ok(DomainResult.Failed(errorMessage ?? "Unknown error."));
+                throw new Exception(errorMessage);
             }
             catch (Exception e)
             {
                 _logger.LogError(e.Message + Environment.NewLine + e.InnerException);
+
                 return Ok(DomainResult.Failed(e.Message + Environment.NewLine + e.InnerException));
             }
         }
@@ -399,23 +407,27 @@ namespace MyFavoriteMovie.WebAPI.Controllers
                     var movie = movieResult.Result;
                     var actor = actorResult.Result;
 
-                    if (movie != null && actor != null)
-                        movie!.Actors.Remove(actor);
+                    if (movie == null || actor == null)
+                        return NotFound();
 
-                    await _movieRepository.UpdateAsync(movie!);
+                    movie.Actors.Remove(actor);
 
-                    return Ok(DomainResult.Succeeded());
+                    var result = await _movieRepository.UpdateAsync(movie);
+
+                    if (result.Success)
+                        return Ok(DomainResult.Succeeded());
+
+                    throw new Exception(result.Message);
                 }
 
                 var errorMessage = actorResult.Message + Environment.NewLine + actorResult.Message;
 
-                _logger.LogError(errorMessage);
-
-                return Ok(DomainResult.Failed(errorMessage ?? "Unknown error."));
+                throw new Exception(errorMessage);
             }
             catch (Exception e)
             {
                 _logger.LogError(e.Message + Environment.NewLine + e.InnerException);
+
                 return Ok(DomainResult.Failed(e.Message + Environment.NewLine + e.InnerException));
             }
         }
@@ -486,14 +498,12 @@ namespace MyFavoriteMovie.WebAPI.Controllers
 
                 var errorMessage = actorResult.Message + Environment.NewLine + countResult.Message;
 
-                _logger.LogError(errorMessage);
-
-                return Ok(DomainResult.Failed(errorMessage ?? "Unknown error."));
-
+                throw new Exception(errorMessage);
             }
             catch (Exception e)
             {
                 _logger.LogError(e.Message + Environment.NewLine + e.InnerException);
+
                 return Ok(DomainResult.Failed(e.Message + Environment.NewLine + e.InnerException));
             }
         }
