@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using MyFavoriteMovie.Core;
 using MyFavoriteMovie.Core.Models;
 using MyFavoriteMovie.Core.Repositories.Interfaces;
+using MyFavoriteMovie.Core.Services.Auth;
 using MyFavoriteMovie.WebAPI.Dto;
 using MyFavoriteMovie.WebAPI.Dto.Actor;
 using MyFavoriteMovie.WebAPI.Utiles;
@@ -155,6 +157,7 @@ namespace MyFavoriteMovie.WebAPI.Controllers
         /// <param name="actorDto">New actor to add</param>
         /// <returns>DomainResult</returns>
         [HttpPost]
+        [Authorize(Roles = $"{AuthRoles.ModeratorRole},{AuthRoles.AdministratorRole}")]
         [ActionName("Add")]
         public async Task<IActionResult> AddAsync([FromForm] ActorDto_AddUpdateAction actorDto)
         {
@@ -206,6 +209,7 @@ namespace MyFavoriteMovie.WebAPI.Controllers
         /// <param name="actorDto">New properties to update actor</param>
         /// <returns>DomainResult</returns>
         [HttpPut]
+        [Authorize(Roles = $"{AuthRoles.ModeratorRole},{AuthRoles.AdministratorRole}")]
         [ActionName("Update")]
         public async Task<IActionResult> UpdateAsync([FromForm] ActorDto_AddUpdateAction actorDto)
         {
@@ -269,6 +273,7 @@ namespace MyFavoriteMovie.WebAPI.Controllers
         /// <param name="actorId">Actor id</param>
         /// <returns>DomainResult</returns>
         [HttpDelete]
+        [Authorize(Roles = $"{AuthRoles.ModeratorRole},{AuthRoles.AdministratorRole}")]
         [ActionName("Delete")]
         public async Task<IActionResult> DeleteAsync([FromQuery] int? actorId)
         {
@@ -413,6 +418,7 @@ namespace MyFavoriteMovie.WebAPI.Controllers
         /// <param name="movieId">Movie id</param>
         /// <returns>DomainResult</returns>
         [HttpPatch]
+        [Authorize(Roles = $"{AuthRoles.ModeratorRole},{AuthRoles.AdministratorRole}")]
         [ActionName("AddMovie")]
         public async Task<IActionResult> AddMovieToMovieAsync([FromQuery] int? actorId, [FromForm] int? movieId)
         {
@@ -463,6 +469,7 @@ namespace MyFavoriteMovie.WebAPI.Controllers
         /// <param name="movieId">Movie id</param>
         /// <returns>DomainResult</returns>
         [HttpPatch]
+        [Authorize(Roles = $"{AuthRoles.ModeratorRole},{AuthRoles.AdministratorRole}")]
         [ActionName("DeleteMovie")]
         public async Task<IActionResult> DeleteMovieFromMovieAsync([FromQuery] int? actorId, [FromForm] int? movieId)
         {
