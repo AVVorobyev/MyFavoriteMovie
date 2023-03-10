@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using MyFavoriteMovie.Core;
 using MyFavoriteMovie.Core.Models;
 using MyFavoriteMovie.Core.Repositories.Interfaces;
+using MyFavoriteMovie.Core.Services.Auth;
 using MyFavoriteMovie.WebAPI.Dto;
 using MyFavoriteMovie.WebAPI.Dto.Movie;
 using MyFavoriteMovie.WebAPI.Utiles;
@@ -171,11 +173,15 @@ namespace MyFavoriteMovie.WebAPI.Controllers
         /// <param name="movieDto">New movie to add</param>
         /// <returns>DomainResult</returns>
         [HttpPost]
+        [Authorize(Roles = $"{AuthRoles.ModeratorRole},{AuthRoles.AdministratorRole}")]
         [ActionName("Add")]
         public async Task<IActionResult> AddAsync([FromForm] MovieDto_AddUpdateAction movieDto)
         {
             if (movieDto == null)
                 return NotFound();
+
+            if (movieDto.Name == null)
+                throw new Exception($"Property {nameof(movieDto.Name)} can't be null");
 
             try
             {
@@ -226,6 +232,7 @@ namespace MyFavoriteMovie.WebAPI.Controllers
         /// <param name="movieDto">New properties to update movie</param>
         /// <returns>DomainResult</returns>
         [HttpPut]
+        [Authorize(Roles = $"{AuthRoles.ModeratorRole},{AuthRoles.AdministratorRole}")]
         [ActionName("Update")]
         public async Task<IActionResult> UpdateAsync([FromForm] MovieDto_AddUpdateAction movieDto)
         {
@@ -294,6 +301,7 @@ namespace MyFavoriteMovie.WebAPI.Controllers
         /// <param name="movieId">Movie id</param>
         /// <returns>DomainResult</returns>
         [HttpDelete]
+        [Authorize(Roles = $"{AuthRoles.ModeratorRole},{AuthRoles.AdministratorRole}")]
         [ActionName("Delete")]
         public async Task<IActionResult> DeleteAsync([FromQuery] int? movieId)
         {
@@ -339,6 +347,7 @@ namespace MyFavoriteMovie.WebAPI.Controllers
         /// <param name="actorId">Actor id</param>
         /// <returns>DomainResult</returns>
         [HttpPatch]
+        [Authorize(Roles = $"{AuthRoles.ModeratorRole},{AuthRoles.AdministratorRole}")]
         [ActionName("AddActor")]
         public async Task<IActionResult> AddActorToMovieAsync([FromQuery] int? movieId, [FromForm] int? actorId)
         {
@@ -389,6 +398,7 @@ namespace MyFavoriteMovie.WebAPI.Controllers
         /// <param name="actorId">Actor id</param>
         /// <returns>DomainResult</returns>
         [HttpPatch]
+        [Authorize(Roles = $"{AuthRoles.ModeratorRole},{AuthRoles.AdministratorRole}")]
         [ActionName("DeleteActor")]
         public async Task<IActionResult> DeleteActorFromMovieAsync(int? movieId, [FromForm] int? actorId)
         {
