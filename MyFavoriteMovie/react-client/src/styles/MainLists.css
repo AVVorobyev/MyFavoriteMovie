@@ -28,6 +28,10 @@
     height: 10px;
 }
 
+.delimiter_W10 {
+    width: 10px;
+}
+
 .main_inline {
     display: inline-block;
 }
@@ -41,6 +45,6 @@
     color: rgb(212, 212, 212);
 }
 
-.main_align_end{
+.main_align_end {
     text-align: end;
 }

@@ -6,13 +6,22 @@ import { EditActorModal } from "./EditActorModal";
 import '../../../src/styles/Main.css';
 import DateFormater from '../../components/DateFormater.js';
 import { EditMoviesListModal } from "./EditMoviesListModal";
+import { Header } from "../../components/Header/Header";
+import Visible from "../../components/Auth/Visible";
+import getRoleFromCookies from "../../components/Auth/GetRoleFromCookies";
+import { Role } from "../../components/Auth/Roles";
 
 const defaultAvatarImage = process.env.REACT_APP_Default_Images + "defaultAvatarImage.png";
 
 export class Actor extends Component {
     constructor(props) {
         super(props);
-        this.state = { actor: [], redirect: false, avatarImage: [], editActorShow: false, editMoviesListShow: false }
+        this.state = {
+            actor: [],
+            redirect: false, avatarImage: [],
+            editActorShow: false,
+            editMoviesListShow: false
+        }
     }
 
     setRedirect() {
@@ -32,14 +41,18 @@ export class Actor extends Component {
                 id: this.props.actorId
             }
         }).then(response => {
-            this.setState({ actor: response.data });
+            if (response.data.Success === true) {
+                this.setState({ actor: response.data.Result });
 
-            if (response.data.AvatarImage === null || response.data.AvatarImage === undefined) {
-                this.setState({ avatarImage: defaultAvatarImage });
+                if (response.data.Result.AvatarImage === null || response.data.Result.AvatarImage === undefined) {
+                    this.setState({ avatarImage: defaultAvatarImage });
+                }
+                else {
+                    this.setState({ avatarImage: response.data.Result.AvatarImage })
+                }
             }
-            else {
-                this.setState({ avatarImage: response.data.AvatarImage })
-            }
+            else
+                alert(response.Message);
         })
     }
 
@@ -47,41 +60,43 @@ export class Actor extends Component {
         this.getActorById();
     }
 
+    componentDidUpdate(prevProps) {
+        if (this.props.actorId !== prevProps.actorId)
+            this.getActorById();
+    }
+
     deleteActor(actor) {
-        const formData = new FormData();
-        formData.append("Id", actor.Id)
-
-        if (this.state.avatarImage !== defaultAvatarImage) {
-            let fileName = this.state.avatarImage.split('/').pop();
-            formData.append("AvatarImage", fileName);
-        }
-
         if (window.confirm('Are you sure?')) {
             axios({
                 method: "DELETE",
                 url: process.env.REACT_APP_API_URL_Actor + 'Delete',
-                data: formData
+                params: {
+                    actorId: actor.Id
+                }
             }).then(response => {
-                alert(response.data);
-                this.setRedirect();
-            }, (error) => {
-                alert("Error!");
+                if (response.data.Success === true)
+                    this.setRedirect();
+                else
+                    alert(response.data.Message);
             });
         }
     }
 
     render() {
         const { actor, avatarImage } = this.state;
+        const role = getRoleFromCookies();
 
         return (
             <div>
+                <Header />
+
                 {this.renderRedirect()}
                 <div className="main_container">
                     <div className="main_inline main_image_container">
                         <Image className="main_image" src={avatarImage}></Image>
                     </div>
 
-                    <div className="main_inline main_delimiter_W100"></div>
+                    <div className="main_inline main_delimiter_W50"></div>
 
                     <div className="main_inline main_info_container ">
                         <div className="main_inline main_info_row main_title">{actor.Name} {actor.Surname}</div>
@@ -109,7 +124,7 @@ export class Actor extends Component {
 
                         <table>
                             <tbody>
-                                {actor.ActorsInMovie?.map(movie =>
+                                {actor?.ActorsInMovie?.map(movie =>
                                     <tr key={movie.Id}>
                                         <NavLink
                                             to={"/Movie/Movie/" + movie.Id}
@@ -123,40 +138,64 @@ export class Actor extends Component {
                             </tbody>
                         </table>
 
-                        <Button
-                            onClick={() => this.setState({ editMoviesListShow: true })}>
-                            Edit Movies List
-                        </Button>
-                        <EditMoviesListModal
-                            show={this.state.editMoviesListShow}
-                            onHide={() => this.setState({ editMoviesListShow: false })}
-                            actorid={actor.Id}>
-                        </EditMoviesListModal>
-                    </div>
+                        <div className="delimiter_H10"></div>
 
+                        <Visible
+                            component={
+                                <ButtonToolbar>
+
+                                    <Button
+                                        onClick={() => this.setState({ editMoviesListShow: true })}>
+                                        Edit Movies List
+                                    </Button>
+
+                                    <EditMoviesListModal
+                                        show={this.state.editMoviesListShow}
+                                        onHide={() => this.setState({ editMoviesListShow: false })}
+                                        actorid={actor.Id}>
+                                    </EditMoviesListModal>
+                                </ButtonToolbar>
+                            }
+                            isVisible={role === Role.Administrator || role === Role.Moderator}>
+                        </Visible>
+                    </div>
                 </div>
 
+                <div className="delimiter_H10"></div>
 
-                <ButtonToolbar>
-                    <NavLink to="/Actor/Actors" className="btn btn-primary">To Actors</NavLink>
-                    <Button onClick={() => { this.setState({ editActorShow: true, actor: actor }) }}
-                        variant='info'>
-                        Edit
-                    </Button>
-                    <Button
-                        onClick={() => { this.deleteActor(actor); }}
-                        variant="danger">Delete</Button>
+                <NavLink to="/Actor/Actors" className="btn btn-primary">To Actors</NavLink>
 
-                    <EditActorModal show={this.state.editActorShow}
-                        onHide={() => this.setState({ editActorShow: false })}
-                        Id={actor.Id}
-                        Name={actor.Name}
-                        Surname={actor.Surname}
-                        BirthDate={actor.BirthDate}
-                        DeathDate={actor.DeathDate}
-                        AvatarImage={avatarImage}
-                    ></EditActorModal>
-                </ButtonToolbar>
+                <div className="delimiter_H10"></div>
+
+                <Visible
+                    component={
+                        <ButtonToolbar>
+                            <Button
+                                onClick={() => { this.deleteActor(actor); }}
+                                variant="danger">
+                                Delete
+                            </Button>
+
+                            <div className="main_delimiter_W10"></div>
+
+                            <Button onClick={() => { this.setState({ editActorShow: true, actor: actor }) }}
+                                variant='info'>
+                                Edit
+                            </Button>
+
+                            <EditActorModal show={this.state.editActorShow}
+                                onHide={() => this.setState({ editActorShow: false })}
+                                Id={actor.Id}
+                                Name={actor.Name}
+                                Surname={actor.Surname}
+                                BirthDate={actor.BirthDate}
+                                DeathDate={actor.DeathDate}
+                                AvatarImage={avatarImage}>
+                            </EditActorModal>
+                        </ButtonToolbar>
+                    }
+                    isVisible={role === Role.Administrator || role === Role.Moderator}>
+                </Visible>
             </div>
         )
     }

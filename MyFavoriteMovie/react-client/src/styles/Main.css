@@ -59,8 +59,12 @@
     min-width: 600px;
 }
 
-.main_inline.main_delimiter_W100 {
+.main_inline.main_delimiter_W50 {
     width: 50px;
+}
+
+.main_delimiter_W10 {
+    width: 10px;
 }
 
 .main_inline.delimiter_W5 {

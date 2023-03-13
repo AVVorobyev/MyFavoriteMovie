@@ -5,6 +5,10 @@ import { NavLink } from "react-router-dom";
 import { AddActorModal } from "./AddActorModal";
 import '../../../src/styles/MainLists.css';
 import DateFormater from '../../components/DateFormater.js';
+import { Header } from "../../components/Header/Header";
+import Visible from "../../components/Auth/Visible";
+import getRoleFromCookies from "../../components/Auth/GetRoleFromCookies";
+import { Role } from "../../components/Auth/Roles";
 
 export class Actors extends Component {
     constructor(props) {
@@ -25,11 +29,14 @@ export class Actors extends Component {
                 take: this.state.take
             }
         }).then(response => {
-            this.setState({
-                actors: response.data.List,
-                actorsCount: response.data.Count
-            });
-        }, () => {
+            if (response.data.Success === true) {
+                this.setState({
+                    actors: response.data.Result.List,
+                    actorsCount: response.data.Result.Count
+                });
+            }
+            else
+                alert(response.Message);
         });
     }
 
@@ -59,15 +66,18 @@ export class Actors extends Component {
     render() {
         let { actors } = this.state;
         let addModalClose = () => this.setState({ addModalShow: false });
-        
+        const role = getRoleFromCookies();
+
         return (
             <div>
+                <Header />
+
                 <h1>Actors</h1>
 
                 <div className="main_container">
                     <table>
                         <tbody>
-                            {actors.map(actor =>
+                            {actors?.map(actor =>
                                 <tr key={actor.Id}
                                 >
                                     <NavLink
@@ -90,19 +100,31 @@ export class Actors extends Component {
                 <div className="delimiter_H10"></div>
 
                 <ButtonToolbar>
-                    <Button
-                        onClick={() => this.setState({ addModalShow: true })}>
-                        Add Actor</Button>
-                    <AddActorModal
-                        show={this.state.addModalShow}
-                        onHide={addModalClose}>
-                    </AddActorModal>
-
-                    <div className="delimiter_H10"></div>
-
                     <Button className="danger" onClick={() => { this.handlePreviousPageChanged(); }}>Previous</Button>
+
+                    <div className="delimiter_W10"></div>
+
                     <Button className="danger" onClick={() => { this.handleNextPageChanged(); }}>Next</Button>
                 </ButtonToolbar>
+
+                <div className="delimiter_H10"></div>
+
+                <Visible
+                    component={
+                        <ButtonToolbar>
+                            <Button
+                                onClick={() => this.setState({ addModalShow: true })}>
+                                Add Actor
+                            </Button>
+
+                            <AddActorModal
+                                show={this.state.addModalShow}
+                                onHide={addModalClose}>
+                            </AddActorModal>
+                        </ButtonToolbar>
+                    }
+                    isVisible={role === Role.Administrator || role === Role.Moderator}>
+                </Visible>
             </div>
         )
     }
