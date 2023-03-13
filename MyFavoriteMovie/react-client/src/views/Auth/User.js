@@ -16,9 +16,11 @@ export class User extends Component {
             method: "GET"
         }
         ).then(response => {
-            if (response.data.Success) {
+            if (response.data.Success === true) {
                 this.setState({ user: response.data.Result });
             }
+            else
+                alert(response.data.Message);
         })
     }
 
@@ -28,7 +30,7 @@ export class User extends Component {
 
     render() {
         let { user } = this.state;
-        
+
         return (
             <div>
                 <Header />
@@ -48,7 +50,7 @@ export class User extends Component {
                         <div className="main_inline main_info_row_property_name">Email</div>
                         <div className="main_inline main_info_row_result">{user.Surname}</div>
                     </div>
-                    
+
                     <div className="main_info_row">
                         <div className="main_inline main_info_row_property_name">Date of Registration</div>
                         <div className="main_inline main_info_row_result">{<DateFormater date={user.RegistrationDate} />}</div>
@@ -58,9 +60,7 @@ export class User extends Component {
                         <div className="main_inline main_info_row_property_name">Role</div>
                         <div className="main_inline main_info_row_result">{user.Role}</div>
                     </div>
-
                 </div>
-
             </div>
         )
     }
