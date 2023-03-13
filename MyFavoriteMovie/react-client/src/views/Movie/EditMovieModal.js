@@ -12,7 +12,6 @@ export class EditMovieModal extends Component {
         this.state = { newPoster: defaultPosterImage };
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleFileSelected = this.handleFileSelected.bind(this);
-
     }
 
     handleSubmit(e) {
@@ -31,10 +30,10 @@ export class EditMovieModal extends Component {
             url: process.env.REACT_APP_API_URL_Movie + "Update",
             data: formData
         }).then(response => {
-            alert(response.data);
-            this.refreshPage();
-        }, (error) => {
-            alert("error!");
+            if (response.data.Success === true)
+                this.refreshPage();
+            else
+                alert(response.data.Message);
         });
     }
 
