@@ -41,9 +41,10 @@ export class AddActorModal extends Component {
             method: "POST",
             data: formData
         }).then(response => {
-            alert(response.data);
-        }, (error) => {
-            alert("Error!");
+            if (response.data.Success === false)
+                alert(response.data.Message);
+            else
+                alert(response.data.Message);
         });
     }
 
@@ -94,7 +95,6 @@ export class AddActorModal extends Component {
                                     <Button variant="primary" type="submit">
                                         Add
                                     </Button>
-
                                 </Form.Group>
                             </Form>
                         </Col>
