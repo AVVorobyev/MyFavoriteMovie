@@ -60,7 +60,6 @@ export class Movie extends Component {
     }
 
     deleteMovie(movie) {
-
         if (window.confirm('Are you sure?')) {
             axios({
                 method: "DELETE",
@@ -69,10 +68,10 @@ export class Movie extends Component {
                     movieId: movie.Id
                 }
             }).then(response => {
-                alert(response.data);
-                this.setRedirect();
-            }, (error) => {
-                alert("Error!");
+                if (response.data.Success === true)
+                    this.setRedirect();
+                else
+                    alert(response.data);
             });
         }
     }
@@ -98,7 +97,7 @@ export class Movie extends Component {
                         />
                     </div>
 
-                    <div className="main_inline main_delimiter_W100"></div>
+                    <div className="main_inline main_delimiter_W50"></div>
 
                     <div className="main_inline main_info_container">
                         <div className="main_info_row main_title">{movie.Name}</div>
@@ -132,50 +131,68 @@ export class Movie extends Component {
                                                 {actor.Name} {actor.Surname}
                                             </div>
                                         </NavLink>
-
                                     </tr>
                                 )}
                             </tbody>
                         </table>
 
-                        <Button
-                            onClick={() => this.setState({ editActorsListShow: true })}
-                        >Edit Actor List</Button>
+                        <div className="delimiter_H10"></div>
 
-                        <EditActorsListModal
-                            show={this.state.editActorsListShow}
-                            onHide={() => this.setState({ editActorsListShow: false })}
-                            movieid={movie.Id}
-                        ></EditActorsListModal>
+                        <Visible
+                            component={
+                                <ButtonToolbar>
+                                    <Button
+                                        onClick={() => this.setState({ editActorsListShow: true })}
+                                    >Edit Actor List
+                                    </Button>
+
+                                    <EditActorsListModal
+                                        show={this.state.editActorsListShow}
+                                        onHide={() => this.setState({ editActorsListShow: false })}
+                                        movieid={movie.Id}
+                                    ></EditActorsListModal>
+                                </ButtonToolbar>
+                            }
+                            isVisible={role === Role.Administrator || role === Role.Moderator}>
+                        </Visible>
                     </div>
                 </div >
 
+                <div className="delimiter_H10"></div>
+
                 <NavLink to="/Movie/Movies" className="btn btn-primary">To Movies</NavLink>
+
+                <div className="delimiter_H10"></div>
 
                 <Visible
                     component={
                         <ButtonToolbar>
                             <Button onClick={() => this.setState({ editMovieShow: true, movie: movie })}
-                                variant='info'>Edit
+                                variant='info'>
+                                Edit
                             </Button>
+
+                            <div className="main_delimiter_W10"></div>
 
                             <Button
                                 onClick={() => { this.deleteMovie(movie); }}
-                                variant='danger'>Delete</Button>
+                                variant='danger'>
+                                Delete
+                            </Button>
+
+                            <EditMovieModal show={this.state.editMovieShow}
+                                onHide={() => this.setState({ editMovieShow: false })}
+                                Id={movie.Id}
+                                Name={movie.Name}
+                                Description={movie.Description}
+                                ReleaseDate={movie.ReleaseDate}
+                                Duration={movie.Duration}
+                                Poster={posterImage}>
+                            </EditMovieModal>
                         </ButtonToolbar>
                     }
                     isVisible={role === Role.Administrator || role === Role.Moderator}>
                 </Visible>
-
-                <EditMovieModal show={this.state.editMovieShow}
-                    onHide={() => this.setState({ editMovieShow: false })}
-                    Id={movie.Id}
-                    Name={movie.Name}
-                    Description={movie.Description}
-                    ReleaseDate={movie.ReleaseDate}
-                    Duration={movie.Duration}
-                    Poster={posterImage}>
-                </EditMovieModal>
             </div >
         )
     }
