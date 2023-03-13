@@ -32,9 +32,10 @@ export class AddMovieModal extends Component {
             url: process.env.REACT_APP_API_URL_Movie + "Add",
             data: formData
         }).then(response => {
-            alert(response.data);
-        }, (error) => {
-            alert("Error!");
+            if (!response.data.Success === true)
+                alert(response.data.Message);
+            else
+                alert(response.data.Message);
         });
     }
 
