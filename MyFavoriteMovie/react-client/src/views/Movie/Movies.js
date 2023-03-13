@@ -7,6 +7,9 @@ import { NavLink } from "react-router-dom";
 import DateFormater from '../../components/DateFormater.js';
 import TimeSpanFormater from "../../components/TimeSpanFormater";
 import { Header } from "../../components/Header/Header";
+import Visible from "../../components/Auth/Visible";
+import getRoleFromCookies from "../../components/Auth/GetRoleFromCookies";
+import { Role } from "../../components/Auth/Roles";
 
 export class Movies extends Component {
 
@@ -26,8 +29,8 @@ export class Movies extends Component {
             }
         }).then(response => {
             this.setState({
-                movies: response.data.List,
-                movieCount: response.data.Count
+                movies: response.data.Result.List,
+                movieCount: response.data.Result.Count
             });
         }, () => {
         });
@@ -65,16 +68,17 @@ export class Movies extends Component {
     render() {
         const { movies } = this.state;
         let addModalClose = () => this.setState({ addModalShow: false })
+        const role = getRoleFromCookies();
 
         return (
             <div>
-                <Header /> 
+                <Header />
                 <h1>Movies</h1>
 
                 <div className="main_lists_container">
                     <table>
                         <tbody>
-                            {movies.map(movie =>
+                            {movies?.map(movie =>
                                 <tr key={movie.Id}>
                                     <NavLink
                                         to={"/Movie/Movie/" + movie.Id}
@@ -95,18 +99,31 @@ export class Movies extends Component {
                 <div className="delimiter_H10"></div>
 
                 <ButtonToolbar>
-                    <Button
-                        onClick={() => this.setState({ addModalShow: true })}>
-                        Add Movie
-                    </Button>
-                    <AddMovieModal
-                        show={this.state.addModalShow}
-                        onHide={addModalClose}>
-                    </AddMovieModal>
-
                     <Button className="danger" onClick={() => { this.handlePreviousPageChanged(); }}>Previous</Button>
+
+                    <div className="delimiter_W10"></div>
+
                     <Button className="danger" onClick={() => { this.handleNextPageChanged(); }}>Next</Button>
                 </ButtonToolbar>
+
+                <div className="delimiter_H10"></div>
+
+                <Visible
+                    component={
+                        <ButtonToolbar>
+                            <Button
+                                onClick={() => this.setState({ addModalShow: true })}>
+                                Add Movie
+                            </Button>
+                            <AddMovieModal
+                                show={this.state.addModalShow}
+                                onHide={addModalClose}>
+                            </AddMovieModal>
+                        </ButtonToolbar>
+                    }
+                    isVisible={role === Role.Administrator || role === Role.Moderator}
+                >
+                </Visible>
             </div >
         )
     }
