@@ -20,8 +20,8 @@ export class EditActorsListModal extends Component {
             }
         }).then(response => {
             this.setState({
-                actors: response.data.List,
-                actorsCount: response.data.Count
+                actors: response.data.Result.List,
+                actorsCount: response.data.Result.Count
             });
         }, () => {
         });
@@ -38,8 +38,8 @@ export class EditActorsListModal extends Component {
             }
         }).then(response => {
             this.setState({
-                actors: response.data.List,
-                actorsCount: response.data.Count
+                actors: response.data.Result.List,
+                actorsCount: response.data.Result.Count
             });
 
         }, () => {
@@ -112,15 +112,15 @@ export class EditActorsListModal extends Component {
                 movieId: this.props.movieid,
             },
             data: formData
-        }).then(() => {
-
-            if (this.state.filterString.length > 0)
-                this.getFilteredActorsList();
+        }).then(response => {
+            if (response.data.Success === true) {
+                if (this.state.filterString.length > 0)
+                    this.getFilteredActorsList();
+                else
+                    this.getActorsList();
+            }
             else
-                this.getActorsList();
-
-        }, (error) => {
-            alert("error!");
+                alert(response.data.Message);
         });
     }
 
@@ -135,19 +135,21 @@ export class EditActorsListModal extends Component {
                 movieId: this.props.movieid,
             },
             data: formData
-        }).then(() => {
-            if (this.state.filterString.length > 0)
-                this.getFilteredActorsList();
+        }).then(response => {
+            if (response.data.Success === true) {
+                if (this.state.filterString.length > 0)
+                    this.getFilteredActorsList();
+                else
+                    this.getActorsList();
+            }
             else
-                this.getActorsList();
-        }, (error) => {
-            alert("error!");
+                alert(response.data.Message);
         });
     }
 
     render() {
         let { actors, actorsCount } = this.state;
-        
+
         return (
             <div>
 
@@ -181,7 +183,7 @@ export class EditActorsListModal extends Component {
                                             <div className="delimiter_H10"></div>
 
                                         </Form.Group>
-                                        {actors.map(actor =>
+                                        {actors?.map(actor =>
                                             <tr key={actor.Id}>
                                                 <td>
                                                     <Form.Group>
@@ -204,8 +206,11 @@ export class EditActorsListModal extends Component {
 
                                 <div className="main_modal_center">
 
-                                    <Button onClick={() => { this.addActorsOnPage() }} className="main_modal_btn_more">
-                                        More</Button>
+                                    <Button
+                                        onClick={() => { this.addActorsOnPage() }}
+                                        className="main_modal_btn_more">
+                                        More
+                                    </Button>
                                 </div>
 
                                 <div className="delimiter_H10"></div>
@@ -220,9 +225,7 @@ export class EditActorsListModal extends Component {
                         <Button onClick={() => { this.props.onHide(); this.refreshPage(); }}>Close</Button>
                     </Modal.Footer>
                 </Modal>
-
             </div >
-
         )
     }
 }
