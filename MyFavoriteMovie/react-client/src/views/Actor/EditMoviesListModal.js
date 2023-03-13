@@ -19,11 +19,14 @@ export class EditMoviesListModal extends Component {
                 take: this.state.take
             }
         }).then(response => {
-            this.setState({
-                movies: response.data.List,
-                moviesCount: response.data.Count
-            });
-        }, () => {
+            if (response.data.Success === true) {
+                this.setState({
+                    movies: response.data.Result.List,
+                    moviesCount: response.data.Result.Count
+                });
+            }
+            else
+                alert(response.data.Message);
         });
     }
 
@@ -37,12 +40,14 @@ export class EditMoviesListModal extends Component {
                 take: this.state.take
             }
         }).then(response => {
-            this.setState({
-                movies: response.data.List,
-                moviesCount: response.data.Count
-            });
-
-        }, () => {
+            if (response.data.Success === true) {
+                this.setState({
+                    movies: response.data.Result.List,
+                    moviesCount: response.data.Result.Count
+                });
+            }
+            else
+                alert(response.data.Message);
         });
     }
 
@@ -112,14 +117,15 @@ export class EditMoviesListModal extends Component {
                 actorId: this.props.actorid,
             },
             data: formData
-        }).then(() => {
-            if (this.state.filterString.length > 0)
-                this.getFilteredMovieList();
+        }).then(response => {
+            if (response.data.Success === true) {
+                if (this.state.filterString.length > 0)
+                    this.getFilteredMovieList();
+                else
+                    this.getMoviesList();
+            }
             else
-                this.getMoviesList();
-
-        }, (error) => {
-            alert("error!");
+                alert(response.data.Message);
         });
     }
 
@@ -134,13 +140,15 @@ export class EditMoviesListModal extends Component {
                 actorId: this.props.actorid,
             },
             data: formData
-        }).then(() => {
-            if (this.state.filterString.length > 0)
-                this.getFilteredMovieList();
+        }).then(response => {
+            if (response.data.Success === true) {
+                if (this.state.filterString.length > 0)
+                    this.getFilteredMovieList();
+                else
+                    this.getMoviesList();
+            }
             else
-                this.getMoviesList();
-        }, (error) => {
-            alert("error!");
+                alert(response.data.Message);
         });
     }
 
@@ -180,7 +188,7 @@ export class EditMoviesListModal extends Component {
                                             <div className="delimiter_H10"></div>
 
                                         </Form.Group>
-                                        {movies.map(movie =>
+                                        {movies?.map(movie =>
                                             <tr key={movie.Id}>
                                                 <td>
                                                     <Form.Group>
@@ -203,25 +211,21 @@ export class EditMoviesListModal extends Component {
 
                                 <div className="main_modal_center">
 
-                                    <Button onClick={() => { this.addMoviesOnPage() }} className="main_modal_btn_more">
-                                        More</Button>
+                                    <Button
+                                        onClick={() => { this.addMoviesOnPage() }} className="main_modal_btn_more">
+                                        More
+                                    </Button>
                                 </div>
 
                                 <div className="delimiter_H10"></div>
                             </Form>
-
-                        </Col>
-                        <Col>
-
                         </Col>
                     </Modal.Body>
                     <Modal.Footer>
                         <Button onClick={() => { this.props.onHide(); this.refreshPage(); }}>Close</Button>
                     </Modal.Footer>
                 </Modal>
-
             </div >
-
         )
     }
 }
