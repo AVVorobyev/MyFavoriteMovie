@@ -100,7 +100,7 @@ namespace MyFavoriteMovie.WebAPI.Controllers
         /// <returns>Returns DomainResult with movies list</returns>
         [HttpGet]
         [ActionName("Movies")]
-        public async Task<IActionResult> GetRangeAsync(int skip = 0, int take = 50)
+        public async Task<IActionResult> GetRangeAsync([FromQuery] int skip = 0, [FromQuery] int take = 50)
         {
             try
             {
@@ -152,7 +152,8 @@ namespace MyFavoriteMovie.WebAPI.Controllers
 
                     var count = countResult.Result;
 
-                    return Ok(new Dto_ListWithCount<MovieDto_MoviesAction>(movieListDto, count));
+                    return Ok(DomainResult<Dto_ListWithCount<MovieDto_MoviesAction>>.Succeeded(
+                        new Dto_ListWithCount<MovieDto_MoviesAction>(movieListDto, count)));
                 }
 
                 var errorMessage = moviesRresult.Message + Environment.NewLine + countResult.Message;
@@ -177,14 +178,14 @@ namespace MyFavoriteMovie.WebAPI.Controllers
         [ActionName("Add")]
         public async Task<IActionResult> AddAsync([FromForm] MovieDto_AddUpdateAction movieDto)
         {
-            if (movieDto == null)
-                return NotFound();
-
-            if (movieDto.Name == null)
-                throw new Exception($"Property {nameof(movieDto.Name)} can't be null");
-
             try
             {
+                if (movieDto == null)
+                    return NotFound();
+
+                if (movieDto.Name == null)
+                    throw new Exception($"Property {nameof(movieDto.Name)} can't be null");
+
                 string? posterName = null;
 
                 if (movieDto.PosterFile != null)
@@ -236,11 +237,12 @@ namespace MyFavoriteMovie.WebAPI.Controllers
         [ActionName("Update")]
         public async Task<IActionResult> UpdateAsync([FromForm] MovieDto_AddUpdateAction movieDto)
         {
-            if (movieDto == null)
-                return NotFound();
-
             try
             {
+
+                if (movieDto == null)
+                    return NotFound();
+
                 var movieResult = await _movieRepository.GetAsync(
                     filter: m => m.Id == movieDto.Id, asNoTracking: true);
 
@@ -305,11 +307,11 @@ namespace MyFavoriteMovie.WebAPI.Controllers
         [ActionName("Delete")]
         public async Task<IActionResult> DeleteAsync([FromQuery] int? movieId)
         {
-            if (movieId == null)
-                return NotFound();
-
             try
             {
+                if (movieId == null)
+                    return NotFound();
+
                 var movieResult = await _movieRepository.GetAsync(
                     filter: m => m.Id == movieId, asNoTracking: true);
 
@@ -325,9 +327,12 @@ namespace MyFavoriteMovie.WebAPI.Controllers
                     if (movie!.Poster != null)
                         FileManager.Delete(movie.Poster, path);
 
-                    await _movieRepository.DeleteAsync(movie);
+                    var result = await _movieRepository.DeleteAsync(movie);
 
-                    return Ok(DomainResult.Succeeded());
+                    if (result.Success)
+                        return Ok(DomainResult.Succeeded());
+
+                    throw new Exception(result.Message);
                 }
 
                 throw new Exception(movieResult.Message);
@@ -351,11 +356,12 @@ namespace MyFavoriteMovie.WebAPI.Controllers
         [ActionName("AddActor")]
         public async Task<IActionResult> AddActorToMovieAsync([FromQuery] int? movieId, [FromForm] int? actorId)
         {
-            if (movieId == null || actorId == null)
-                return NotFound();
-
             try
             {
+
+                if (movieId == null || actorId == null)
+                    return NotFound();
+
                 var movieResult = await _movieRepository.GetAsync(m => m.Id == movieId,
                     includeProperties: $"{nameof(Movie.Actors)}");
 
@@ -400,13 +406,14 @@ namespace MyFavoriteMovie.WebAPI.Controllers
         [HttpPatch]
         [Authorize(Roles = $"{AuthRoles.ModeratorRole},{AuthRoles.AdministratorRole}")]
         [ActionName("DeleteActor")]
-        public async Task<IActionResult> DeleteActorFromMovieAsync(int? movieId, [FromForm] int? actorId)
+        public async Task<IActionResult> DeleteActorFromMovieAsync([FromQuery] int? movieId, [FromForm] int? actorId)
         {
-            if (movieId == null || actorId == null)
-                return NotFound();
-
             try
             {
+
+                if (movieId == null || actorId == null)
+                    return NotFound();
+
                 var movieResult = await _movieRepository.GetAsync(m => m.Id == movieId,
                     includeProperties: $"{nameof(Movie.Actors)}");
 
@@ -451,7 +458,10 @@ namespace MyFavoriteMovie.WebAPI.Controllers
         /// <returns>Return filtered movies list in DomainResult</returns>
         [HttpGet]
         [ActionName("filter_name")]
-        public async Task<IActionResult> GetRangeBy_Name(string? filter, int skip = 0, int take = 10)
+        public async Task<IActionResult> GetRangeBy_Name(
+            [FromQuery] string? filter,
+            [FromQuery] int skip = 0,
+            [FromQuery] int take = 10)
         {
             try
             {
